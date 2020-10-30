@@ -1,0 +1,15 @@
+.navigation__links {
+    display: flex;
+    justify-content: space-between;
+    list-style: none;
+    padding: 0 10% 0 10%;
+}
+
+.navigation__links a {
+    text-decoration: none;
+    color: black;
+}
+
+.navigation__links a:hover {
+    text-shadow: 0 0 0.1px black;
+}

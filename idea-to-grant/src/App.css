@@ -1,0 +1,14 @@
+h1 {
+  font-weight: 400;
+  text-align: center;
+  margin: 10px;
+}
+
+.app__body {
+  border-top: #e1e1e1 solid 1px;
+  padding-top: 10px;
+}
+
+#app__logobold {
+  font-weight: 600;
+}
