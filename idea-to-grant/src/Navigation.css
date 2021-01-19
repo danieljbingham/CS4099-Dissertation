@@ -2,7 +2,7 @@
     display: flex;
     justify-content: space-between;
     list-style: none;
-    padding: 0 10% 0 10%;
+    padding: 0 8% 0 8%;
 }
 
 .navigation__links a {
