@@ -8,8 +8,8 @@ class ItemService {
     this.config = new Configuration();
   }
 
-  async retrieveItems() {
-    return fetch(this.config.ITEM_COLLECTION_URL)
+  async retrieveUsers() {
+    return fetch(this.config.USERS_COLLECTION_URL)
       .then(response => {
         if (!response.ok) {
             this.handleResponseError(response);
@@ -21,6 +21,30 @@ class ItemService {
         console.log(json);
         const items = [];
         const itemArray = json._embedded.userList;
+        for(var i = 0; i < itemArray.length; i++) {
+          itemArray[i]["link"] =  itemArray[i]._links.self.href;
+          items.push(itemArray[i]);
+        }
+        return items;
+      })
+      .catch(error => {
+        this.handleError(error);
+      });
+  }
+
+  async retrieveOpportunities() {
+    return fetch(this.config.OPPORTUNITIES_COLLECTION_URL)
+      .then(response => {
+        if (!response.ok) {
+            this.handleResponseError(response);
+        }
+        return response.json();
+      })
+      .then(json => {
+        console.log("Retrieved items:");
+        console.log(json);
+        const items = [];
+        const itemArray = json._embedded.opportunityList;
         for(var i = 0; i < itemArray.length; i++) {
           itemArray[i]["link"] =  itemArray[i]._links.self.href;
           items.push(itemArray[i]);
@@ -55,13 +79,13 @@ class ItemService {
   async createItem(newitem) {
     console.log("ItemService.createItem():");
     console.log(newitem);
-    return fetch(this.config.ITEM_COLLECTION_URL, {
+    return fetch(this.config.APPLICATIONS_COLLECTION_URL, {
       method: "POST",
       mode: "cors",
       headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "text/uri-list"
         },
-      body: JSON.stringify(newitem)
+      body: newitem
     })
       .then(response => {
         if (!response.ok) {

@@ -6,24 +6,13 @@ class CurrentPage extends Component {
     constructor(props) {
         super(props);
         this.itemService = new ItemService();
-        this.onSelect = this.onSelect.bind(this);
+        this.addToShortlist = this.addToShortlist.bind(this);
         this.state = {
             showDetails: false,
         }
     }
 
-    componentDidMount() {
-        this.getItems();
-    }
-
     render() {
-        const items = this.state.items;
-        if (!items) return null;
-        const listItems = items.map((item) =>
-            <li key={item.id} onClick={() => this.onSelect(item.id)}>
-                <span className="item-name">{item.name}</span>&nbsp;|&nbsp; {item.role}
-            </li>
-        );
 
         return (
             <div className="currentPage">
@@ -51,34 +40,22 @@ class CurrentPage extends Component {
                 <label for="chkShortlist"> Add this opportunity to shortlist</label>
             </div>*/}
 
-                <button type="button">Add this opportunity to my shortlist</button>
-
-                <ul>
-                    {listItems}
-                </ul>
-
+                <button type="button" onClick={this.addToShortlist}>Add this opportunity to my shortlist</button>
 
             </div>
         )
     }
 
-    getItems() {
-        this.itemService.retrieveItems().then(items => {
-              this.setState({items: items});
-            }
-        );
+    addToShortlist() {
+        // send to api
+        // remove button
+        /*var tosend = {
+            "user":"http://localhost:8080/api/users/1",
+            "opportunity":"http://localhost:8080/api/opportunities/4"
+        }*/
+        var tosend = "http://localhost:8080/api/users/1 http://localhost:8080/api/opportunities/4"
+        this.itemService.createItem(tosend);
     }
-
-    onSelect(itemLink) {
-        this.clearState();
-        this.itemService.getItem(itemLink).then(item => {
-          this.setState({
-              showDetails: true,
-              selectedItem: item
-            });
-          }
-        );
-      }
 }
 
 export default CurrentPage

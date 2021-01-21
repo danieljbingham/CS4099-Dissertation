@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import ItemService from './item-service'
+import Opportunity from './Opportunity';
 
 class FundingCalls extends Component {
     constructor(props) {
@@ -19,23 +20,22 @@ class FundingCalls extends Component {
         const items = this.state.items;
         if (!items) return null;
         const listItems = items.map((item) =>
-            <li key={item.id} onClick={() => this.onSelect(item.id)}>
-                <span className="item-name">{item.name}</span>&nbsp;|&nbsp; {item.role}
-            </li>
+            <Opportunity opportunity={item} />
         );
 
         return (
             <div className="fundingCalls">
-                <h1>Funding Calls</h1>
                 
+                {listItems}
 
+                {/*@TODO pagination*/}
 
             </div>
         )
     }
 
     getItems() {
-        this.itemService.retrieveItems().then(items => {
+        this.itemService.retrieveOpportunities().then(items => {
               this.setState({items: items});
             }
         );
