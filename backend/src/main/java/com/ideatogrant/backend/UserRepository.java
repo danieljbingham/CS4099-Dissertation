@@ -1,7 +1,9 @@
 package com.ideatogrant.backend;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-interface UserRepository extends JpaRepository<User, Long> {
+@RepositoryRestResource(collectionResourceRel = "users", path = "users")
+interface UserRepository extends PagingAndSortingRepository<User, Long> {
 
 }

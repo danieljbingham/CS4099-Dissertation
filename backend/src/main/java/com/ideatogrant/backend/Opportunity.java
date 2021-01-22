@@ -1,16 +1,13 @@
 package com.ideatogrant.backend;
 
-import java.util.Objects;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 class Opportunity {
-    private @Id @GeneratedValue Long id;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
     private String title;
     private String url;
     private String date;
@@ -26,10 +23,6 @@ class Opportunity {
         this.date = date;
         this.description = description;
         this.status = status;
-    }
-
-    public Long getId() {
-        return this.id;
     }
 
     public String getDescription() {
@@ -50,10 +43,6 @@ class Opportunity {
 
     public String getDate() {
         return date;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public void setDescription(String description) {
@@ -83,7 +72,7 @@ class Opportunity {
 
         Opportunity that = (Opportunity) o;
 
-        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (id != that.id) return false;
         if (title != null ? !title.equals(that.title) : that.title != null) return false;
         if (url != null ? !url.equals(that.url) : that.url != null) return false;
         if (date != null ? !date.equals(that.date) : that.date != null) return false;
@@ -93,7 +82,7 @@ class Opportunity {
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
+        int result = (int) (id ^ (id >>> 32));
         result = 31 * result + (title != null ? title.hashCode() : 0);
         result = 31 * result + (url != null ? url.hashCode() : 0);
         result = 31 * result + (date != null ? date.hashCode() : 0);

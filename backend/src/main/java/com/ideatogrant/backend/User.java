@@ -10,7 +10,9 @@ import javax.persistence.*;
 @Entity
 class User {
 
-    private @Id @GeneratedValue Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
     private String name;
     private String role;
 
@@ -26,10 +28,6 @@ class User {
         this.role = role;
     }
 
-    public Long getId() {
-        return this.id;
-    }
-
     public String getName() {
         return this.name;
     }
@@ -40,10 +38,6 @@ class User {
 
     public List<Application> getApplications() {
         return applications;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public void setName(String name) {

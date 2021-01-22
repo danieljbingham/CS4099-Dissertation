@@ -7,8 +7,9 @@ import javax.persistence.*;
 @Entity
 class Application {
 
-    @Id @GeneratedValue
-    private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "USER_ID", referencedColumnName = "ID")
@@ -26,20 +27,12 @@ class Application {
         this.opportunity = opportunity;
     }
 
-    public Long getId() {
-        return id;
-    }
-
     public User getUser() {
         return user;
     }
 
     public Opportunity getOpportunity() {
         return opportunity;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public void setUser(User user) {
@@ -57,14 +50,14 @@ class Application {
 
         Application that = (Application) o;
 
-        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (id != that.id) return false;
         if (user != null ? !user.equals(that.user) : that.user != null) return false;
         return opportunity != null ? opportunity.equals(that.opportunity) : that.opportunity == null;
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
+        int result = (int) (id ^ (id >>> 32));
         result = 31 * result + (user != null ? user.hashCode() : 0);
         result = 31 * result + (opportunity != null ? opportunity.hashCode() : 0);
         return result;
