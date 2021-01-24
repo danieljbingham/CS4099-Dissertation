@@ -83,8 +83,8 @@ class ItemService {
       method: "POST",
       mode: "cors",
       headers: {
-            "Content-Type": "text/uri-list"
-        },
+        "Content-Type": "application/json"
+      },
       body: newitem
     })
       .then(response => {

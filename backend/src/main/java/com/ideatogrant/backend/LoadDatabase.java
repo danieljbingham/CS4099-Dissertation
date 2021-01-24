@@ -41,7 +41,7 @@ class LoadDatabase {
             Optional<Opportunity> o1 = opportunityRepository.findById(3L);
             Opportunity o2 = o1.get();
 
-            Application a = new Application(u2, o2);
+            Application a = new Application(u2, o2, "WOWW");
             log.info("Preloading " + applicationRepository.save(a));
 
         };
