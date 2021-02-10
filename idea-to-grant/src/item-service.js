@@ -9,51 +9,51 @@ class ItemService {
   }
 
   async retrieveUsers() {
-    return fetch(this.config.USERS_COLLECTION_URL)
-      .then(response => {
-        if (!response.ok) {
-            this.handleResponseError(response);
-        }
-        return response.json();
-      })
-      .then(json => {
-        console.log("Retrieved items:");
-        console.log(json);
-        const items = [];
-        const itemArray = json._embedded.userList;
-        for(var i = 0; i < itemArray.length; i++) {
-          itemArray[i]["link"] =  itemArray[i]._links.self.href;
-          items.push(itemArray[i]);
-        }
-        return items;
-      })
-      .catch(error => {
-        this.handleError(error);
-      });
+    let response = await fetch(this.config.USERS_COLLECTION_URL);
+    if (!response.ok) {
+      this.handleResponseError(response);
+    } else {
+      let json = await response.json();
+
+      const items = [];
+      const itemArray = json._embedded.userList;
+      for (var i = 0; i < itemArray.length; i++) {
+        itemArray[i]["link"] = itemArray[i]._links.self.href;
+        items.push(itemArray[i]);
+      }
+      return items;
+    }
   }
 
   async retrieveOpportunities() {
-    return fetch(this.config.OPPORTUNITIES_COLLECTION_URL)
-      .then(response => {
-        if (!response.ok) {
-            this.handleResponseError(response);
-        }
-        return response.json();
-      })
-      .then(json => {
-        console.log("Retrieved items:");
-        console.log(json);
-        const items = [];
-        const itemArray = json._embedded.opportunityList;
-        for(var i = 0; i < itemArray.length; i++) {
-          itemArray[i]["link"] =  itemArray[i]._links.self.href;
-          items.push(itemArray[i]);
-        }
-        return items;
-      })
-      .catch(error => {
-        this.handleError(error);
-      });
+    let response = await fetch(this.config.OPPORTUNITIES_COLLECTION_URL);
+    if (!response.ok) {
+      this.handleResponseError(response);
+    } else {
+      let json = await response.json();
+      return json._embedded.opportunities;
+    }
+  }
+
+  async retrieveApplications() {
+    let response = await fetch(this.config.APPLICATIONS_COLLECTION_URL);
+    if (!response.ok) {
+      this.handleResponseError(response);
+    } else {
+      let json = await response.json();
+      return json._embedded.applications;
+    }
+  }
+
+  //TODO shortlist from user
+  async retrieveShortlist() {
+    let response = await fetch(this.config.SHORTLIST_COLLECTION_URL);
+    if (!response.ok) {
+      this.handleResponseError(response);
+    } else {
+      let json = await response.json();
+      return json._embedded.shortlists;
+    }
   }
 
   async getItem(itemLink) {
@@ -62,14 +62,14 @@ class ItemService {
     return fetch(itemLink)
       .then(response => {
         if (!response.ok) {
-            this.handleResponseError(response);
+          this.handleResponseError(response);
         }
         return response.json();
       })
       .then(item => {
-          item["link"] = item._links.self.href;
-          return item;
-        }
+        console.log("return item " + JSON.stringify(item));
+        return item;
+      }
       )
       .catch(error => {
         this.handleError(error);
@@ -77,25 +77,20 @@ class ItemService {
   }
 
   async createItem(newitem) {
-    console.log("ItemService.createItem():");
-    console.log(newitem);
-    return fetch(this.config.APPLICATIONS_COLLECTION_URL, {
+    let response = await fetch(this.config.OPPORTUNITIES_COLLECTION_URL, {
       method: "POST",
       mode: "cors",
       headers: {
         "Content-Type": "application/json"
       },
-      body: newitem
-    })
-      .then(response => {
-        if (!response.ok) {
-            this.handleResponseError(response);
-        }
-        return response.json();
-      })
-      .catch(error => {
-        this.handleError(error);
-      });
+      body: JSON.stringify(newitem)
+    });
+    if (!response.ok) {
+      this.handleResponseError(response);
+    } else {
+      let json = await response.json();
+      return json;
+    }
   }
 
   async deleteItem(itemlink) {
@@ -107,7 +102,7 @@ class ItemService {
     })
       .then(response => {
         if (!response.ok) {
-            this.handleResponseError(response);
+          this.handleResponseError(response);
         }
       })
       .catch(error => {
@@ -122,8 +117,8 @@ class ItemService {
       method: "PUT",
       mode: "cors",
       headers: {
-            "Content-Type": "application/json"
-          },
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify(item)
     })
       .then(response => {
@@ -137,12 +132,33 @@ class ItemService {
       });
   }
 
+  async createShortlistItem(newitem) {
+    console.log(JSON.stringify(newitem));
+    let response = await fetch(this.config.SHORTLIST_COLLECTION_URL, {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(newitem)
+    });
+    if (!response.ok) {
+      this.handleResponseError(response);
+    } else {
+      let json = await response.json();
+      console.log(JSON.stringify(json));
+      return json;
+    }
+  }
+
+
   handleResponseError(response) {
-      throw new Error("HTTP error, status = " + response.status);
+    throw new Error("HTTP error, status = " + response.status);
   }
 
   handleError(error) {
-      console.log(error.message);
+    console.log(error.message);
   }
 
 }

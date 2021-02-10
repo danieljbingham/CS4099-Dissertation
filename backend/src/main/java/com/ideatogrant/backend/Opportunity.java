@@ -20,15 +20,13 @@ class Opportunity {
     private String date;
     @Column(columnDefinition = "TEXT")
     private String description;
-    private Status status;
 
 
-    public Opportunity(String title, String url, String date, String description, Status status) {
+    public Opportunity(String title, String url, String date, String description) {
         this.title = title;
         this.url = url;
         this.date = date;
         this.description = description;
-        this.status = status;
     }
 
 }

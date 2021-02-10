@@ -5,7 +5,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
-@RepositoryRestResource(collectionResourceRel = "applications", path = "applications")
-interface ApplicationRepository extends PagingAndSortingRepository<Application, Long> {
+@RepositoryRestResource(collectionResourceRel = "shortlists", path = "shortlist")
+interface ShortlistRepository extends PagingAndSortingRepository<Shortlist, Long> {
 
 }

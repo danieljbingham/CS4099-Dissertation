@@ -1,3 +1,7 @@
+.currentPage {
+    margin-top: 5%;
+}
+
 .currentPage textarea {
     width: 90%;
     height: 125px;
@@ -16,6 +20,16 @@
     width: 90%;
     margin: 0 5%;
 
+}
+
+.currentPage form {
+    width: 90%;
+    margin: 0 5%;
+
+}
+
+.currentPage input {
+    display: block;
 }
 
 .currentPage__addToShortlist {
@@ -40,4 +54,45 @@
     width: 90%;
     margin: 0 5%;
 
+}
+
+.currentPage input[type=text] {
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    width: 100%;  
+}
+
+.currentPage input[type=radio] {
+    display: inline;
+}
+
+.currentPage textarea {
+    width: 100%;
+    margin: 8px 0;
+    box-sizing: border-box;
+    padding: 12px 20px;
+}
+
+.currentPage #scan {
+    margin-bottom: 5%;
+}
+
+.currentPage #radios { 
+    margin: 0 0 5% 5%;
+}
+
+.currentPage #radios label { 
+    margin-right: 20px;
+}
+
+.currentPage #radios p { 
+    margin: 0;
+}
+
+.currentPage #radios input { 
+    margin-right: 6px;
+    margin-top: -1px;
+    height: 100%;
+    vertical-align: middle;
 }

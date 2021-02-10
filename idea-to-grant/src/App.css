@@ -5,8 +5,7 @@ h1 {
 }
 
 .app__body {
-  border-top: #e1e1e1 solid 1px;
-  padding-top: 20px;
+  padding-top: 10px;
 }
 
 #app__logobold {
