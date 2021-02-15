@@ -6,12 +6,17 @@ class Opportunity extends Component {
 
     render() {
         console.log("props: " + JSON.stringify(this.props));
+        const title = this.props.opportunity.title;
+        const description = this.props.opportunity.description;
+        const date = this.props.opportunity.date;
+        const url = this.props.opportunity.url;
+        
         return (
             <div className="opportunity">
-                <h1>{this.props.opportunity.title}</h1>
-                <p>{this.props.opportunity.description}</p>
-                <p>Closes {this.props.opportunity.date}</p>
-                <p><a href={this.props.opportunity.url} onClick={this.props.onClick}>Read more...</a></p>
+                <h1>{title}</h1>
+                <p>{description}</p>
+                <p>Closes {date}</p>
+                <p><a href={url} onClick={() => this.props.onClick(title, url, date, description)}>Read more...</a></p>
             </div>
         )
     }

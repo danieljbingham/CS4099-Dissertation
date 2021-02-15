@@ -48,10 +48,13 @@ class App extends Component {
 
           <TabPanel>
             <CurrentPage changeTab={index => this.setTabIndex(index)} currentPageObject={this.state.currentPageObject}
-            setTitle={this.setTitle} setUrl={this.setUrl} setDate={this.setDate} setDescription={this.setDescription}/>
+            setTitle={title => this.setCurrentPageTitle(title)} setUrl={url =>  this.setCurrentPageUrl(url)}
+            setDate={date =>  this.setCurrentPageDate(date)} setDescription={description =>  this.setCurrentPageDescription(description)}/>
           </TabPanel>
           <TabPanel>
-            <FundingCalls changeTab={index => this.setTabIndex(index)}/>
+            <FundingCalls changeTab={index => this.setTabIndex(index)} currentPageObject={this.state.currentPageObject}
+            setTitle={title => this.setCurrentPageTitle(title)} setUrl={url =>  this.setCurrentPageUrl(url)}
+            setDate={date =>  this.setCurrentPageDate(date)} setDescription={description =>  this.setCurrentPageDescription(description)}/>
           </TabPanel>
           <TabPanel>
             <Shortlist changeTab={index => this.setTabIndex(index)}/>

@@ -8,4 +8,5 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 @RepositoryRestResource(collectionResourceRel = "applications", path = "applications")
 interface ApplicationRepository extends PagingAndSortingRepository<Application, Long> {
 
+
 }
