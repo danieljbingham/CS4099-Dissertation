@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import './CurrentPage.css'
 import ItemService from './item-service'
+import Tags from "@yaireo/tagify/dist/react.tagify" // React-wrapper file
+import "@yaireo/tagify/dist/tagify.css" // Tagify CSS
 const toDate = require('normalize-date');
 
 class CurrentPage extends Component {
@@ -21,9 +23,13 @@ class CurrentPage extends Component {
             url: "",
             date: "",
             description: "",
+            tags: [],
             domain: "",
             dateChanged: "",
-            isResearcher: false
+            isResearcher: false,
+            tagifyRef: React.createRef(),
+            tagifyProps: {whitelist: ["html","css","js","java","c++","compsci","maths"], value: this.props.currentPageObject.tags}
+
         }
     }
 
@@ -66,6 +72,23 @@ class CurrentPage extends Component {
                         Description:
                         <textarea value={this.props.currentPageObject.description} title="description" onChange={this.handleChange} />
                     </label>
+                    <label>
+                        Tags:
+                        <Tags
+                    tagifyRef={this.state.tagifyRef} // optional Ref object for the Tagify instance itself, to get access to inner-methods
+                    settings={{
+                        dropdown:{
+                            maxItems: 20,           // <- mixumum allowed rendered suggestions
+                            enabled: 0,             // <- show suggestions on focus
+                            closeOnSelect: false    // <- do not hide the suggestions dropdown once an item has been selected
+                        },
+                        placeholder:"type some tags..."
+                    }}
+                    {...this.state.tagifyProps}   // dynamic props such as "loading", "showDropdown:'abc'", "value"
+                    onChange={e => (e.persist(), this.setTags(e.target.value))}
+                />
+                    </label>
+
                     <input type="submit" value={this.state.isResearcher ? "Add to shortlist" : "Submit opportunity"} />
                 </form>
 
@@ -98,6 +121,8 @@ class CurrentPage extends Component {
             this.props.setUrl(url);
             this.props.setDate("");
             this.props.setDescription("");
+            this.props.setTags([]);
+            this.state.tagifyRef.current.removeAllTags();
         });
     }
 
@@ -108,7 +133,8 @@ class CurrentPage extends Component {
             "title": this.props.currentPageObject.title,
             "url": this.props.currentPageObject.url,
             "date": this.props.currentPageObject.date,
-            "description": this.props.currentPageObject.description
+            "description": this.props.currentPageObject.description,
+            "tags": this.props.currentPageObject.tags
         };
         console.log(requestBody);
         let response = await this.itemService.createItem(requestBody);
@@ -186,6 +212,11 @@ class CurrentPage extends Component {
         value = toDate(value).toISOString().split('T')[0];
         this.props.setDate(value);
         //this.setState({ "date": value });
+    }
+
+    setTags = (values) => {
+        var tagArr = JSON.parse(values).map(item => item.value);
+        this.props.setTags(tagArr);
     }
 
     handleRoleChange = (e) => {

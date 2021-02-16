@@ -67,6 +67,10 @@
     display: inline;
 }
 
+.currentPage input[type=submit] {
+    margin-top: 20px;
+}
+
 .currentPage textarea {
     width: 100%;
     margin: 8px 0;
@@ -95,4 +99,8 @@
     margin-top: -1px;
     height: 100%;
     vertical-align: middle;
+}
+
+.currentPage Tags {
+    margin: 8px 0;
 }

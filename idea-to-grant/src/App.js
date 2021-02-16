@@ -16,13 +16,15 @@ class App extends Component {
     this.setCurrentPageUrl = this.setCurrentPageUrl.bind(this);
     this.setCurrentPageDate = this.setCurrentPageDate.bind(this);
     this.setCurrentPageDescription = this.setCurrentPageDescription.bind(this);
+    this.setCurrentPageTags = this.setCurrentPageTags.bind(this);
     this.state = {
       tabIndex: 0,
       currentPageObject: {
         title: "",
         url: "",
         date: "",
-        description: ""
+        description: "",
+        tags: []
       }
     }
   }
@@ -49,12 +51,14 @@ class App extends Component {
           <TabPanel>
             <CurrentPage changeTab={index => this.setTabIndex(index)} currentPageObject={this.state.currentPageObject}
             setTitle={title => this.setCurrentPageTitle(title)} setUrl={url =>  this.setCurrentPageUrl(url)}
-            setDate={date =>  this.setCurrentPageDate(date)} setDescription={description =>  this.setCurrentPageDescription(description)}/>
+            setDate={date =>  this.setCurrentPageDate(date)} setDescription={description =>  this.setCurrentPageDescription(description)}
+            setTags={tags =>  this.setCurrentPageTags(tags)}/>
           </TabPanel>
           <TabPanel>
             <FundingCalls changeTab={index => this.setTabIndex(index)} currentPageObject={this.state.currentPageObject}
             setTitle={title => this.setCurrentPageTitle(title)} setUrl={url =>  this.setCurrentPageUrl(url)}
-            setDate={date =>  this.setCurrentPageDate(date)} setDescription={description =>  this.setCurrentPageDescription(description)}/>
+            setDate={date =>  this.setCurrentPageDate(date)} setDescription={description =>  this.setCurrentPageDescription(description)}
+            setTags={tags =>  this.setCurrentPageTags(tags)}/>
           </TabPanel>
           <TabPanel>
             <Shortlist changeTab={index => this.setTabIndex(index)}/>
@@ -94,6 +98,12 @@ class App extends Component {
   setCurrentPageDescription(description) {
     var currentPageObject = this.state.currentPageObject;
     currentPageObject.description = description;
+    this.setState({currentPageObject: currentPageObject});
+  }
+
+  setCurrentPageTags(tags) {
+    var currentPageObject = this.state.currentPageObject;
+    currentPageObject.tags = tags;
     this.setState({currentPageObject: currentPageObject});
   }
 }

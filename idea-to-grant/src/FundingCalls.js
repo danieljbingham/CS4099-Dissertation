@@ -76,11 +76,12 @@ class FundingCalls extends Component {
         );
     }
 
-    urlClick(title, url, date, description) {
+    urlClick(title, url, date, description, tags) {
         this.props.setTitle(title);
         this.props.setUrl(url);
         this.props.setDate(date);
         this.props.setDescription(description);
+        this.props.setTags(tags);
         this.props.changeTab(0);
     }
 }
