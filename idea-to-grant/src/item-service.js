@@ -35,6 +35,17 @@ class ItemService {
     }
   }
 
+  async retrieveTaggedOpportunities(tags) {
+    var tagsStr = tags.join(',');
+    let response = await fetch(this.config.TAGGED_SEARCH_URL + "?tags=" + tagsStr);
+    if (!response.ok) {
+      this.handleResponseError(response);
+    } else {
+      let json = await response.json();
+      return json._embedded.opportunities;
+    }
+  }
+
   async retrieveApplications() {
     let response = await fetch(this.config.APPLICATIONS_COLLECTION_URL);
     if (!response.ok) {
@@ -53,6 +64,16 @@ class ItemService {
     } else {
       let json = await response.json();
       return json._embedded.shortlists;
+    }
+  }
+
+  async retrieveTags() {
+    let response = await fetch(this.config.TAGS_COLLECTION_URL);
+    if (!response.ok) {
+      this.handleResponseError(response);
+    } else {
+      let json = await response.json();
+      return json._embedded.strings;
     }
   }
 

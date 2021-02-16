@@ -15,12 +15,13 @@ class FundingCalls extends Component {
         this.state = {
             showDetails: false,
             tagifyRef: React.createRef(),
-            tagifyProps: {whitelist: ["html","css","js","java","c++","compsci","maths"]}
+            tagifyProps: {whitelist: []}
         }
     }
 
     componentDidMount() {
         this.getItems();
+        this.getTags();
     }
 
     render() {
@@ -29,8 +30,6 @@ class FundingCalls extends Component {
         const listItems = items.map((item) =>
             <Opportunity opportunity={item} onClick={this.urlClick} />
         );
-
-        console.log(this.state.tagifyRef);
 
         return (
             <div className="fundingCalls">
@@ -46,7 +45,7 @@ class FundingCalls extends Component {
                         placeholder:"type some tags..."
                     }}
                     {...this.state.tagifyProps}   // dynamic props such as "loading", "showDropdown:'abc'", "value"
-                    onChange={e => (e.persist(), console.log("CHANGED:", e.target.value))}
+                    onChange={e => (e.persist(), console.log("CHANGED:", e.target.value), this.updateOpportunities(e.target.value))}
                 />
 
 
@@ -83,6 +82,31 @@ class FundingCalls extends Component {
         this.props.setDescription(description);
         this.props.setTags(tags);
         this.props.changeTab(0);
+    }
+
+    getTags() {
+
+        this.itemService.retrieveTags().then(tags => {
+            var dummyTagifyProps = this.state.tagifyProps;
+            dummyTagifyProps.whitelist = tags;
+            this.setState({
+                tagifyProps: dummyTagifyProps
+            })
+        }
+        );
+
+    }
+
+    updateOpportunities(values) {
+        if (values === "") {
+            this.getItems();
+        } else {
+            var tagArr = JSON.parse(values).map(item => item.value);
+            this.itemService.retrieveTaggedOpportunities(tagArr).then(items => {
+                this.setState({ items: items });
+            }
+            );
+        }
     }
 }
 

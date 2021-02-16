@@ -9,12 +9,12 @@ class CurrentPage extends Component {
     constructor(props) {
         super(props);
         this.itemService = new ItemService();
-        this.addToShortlist = this.addToShortlist.bind(this);
         this.scanPage = this.scanPage.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleDate = this.handleDate.bind(this);
         this.handleRoleChange = this.handleRoleChange.bind(this);
+        this.getTags = this.getTags.bind(this);
         this.getURL = this.getURL.bind(this);
         this.submitTab = this.submitTab.bind(this);
         this.state = {
@@ -28,13 +28,16 @@ class CurrentPage extends Component {
             dateChanged: "",
             isResearcher: false,
             tagifyRef: React.createRef(),
-            tagifyProps: {whitelist: ["html","css","js","java","c++","compsci","maths"], value: this.props.currentPageObject.tags}
+            tagifyProps: { whitelist: [""], value: this.props.currentPageObject.tags }
 
         }
     }
 
+    componentDidMount() {
+        this.getTags();
+    }
+
     render() {
-        console.log(JSON.stringify(this.props))
 
         return (
             <div className="currentPage">
@@ -75,18 +78,18 @@ class CurrentPage extends Component {
                     <label>
                         Tags:
                         <Tags
-                    tagifyRef={this.state.tagifyRef} // optional Ref object for the Tagify instance itself, to get access to inner-methods
-                    settings={{
-                        dropdown:{
-                            maxItems: 20,           // <- mixumum allowed rendered suggestions
-                            enabled: 0,             // <- show suggestions on focus
-                            closeOnSelect: false    // <- do not hide the suggestions dropdown once an item has been selected
-                        },
-                        placeholder:"type some tags..."
-                    }}
-                    {...this.state.tagifyProps}   // dynamic props such as "loading", "showDropdown:'abc'", "value"
-                    onChange={e => (e.persist(), this.setTags(e.target.value))}
-                />
+                            tagifyRef={this.state.tagifyRef} // optional Ref object for the Tagify instance itself, to get access to inner-methods
+                            settings={{
+                                dropdown: {
+                                    maxItems: 20,           // <- mixumum allowed rendered suggestions
+                                    enabled: 0,             // <- show suggestions on focus
+                                    closeOnSelect: false    // <- do not hide the suggestions dropdown once an item has been selected
+                                },
+                                placeholder: "type some tags..."
+                            }}
+                            {...this.state.tagifyProps}   // dynamic props such as "loading", "showDropdown:'abc'", "value"
+                            onChange={e => (e.persist(), this.setTags(e.target.value))}
+                        />
                     </label>
 
                     <input type="submit" value={this.state.isResearcher ? "Add to shortlist" : "Submit opportunity"} />
@@ -95,18 +98,7 @@ class CurrentPage extends Component {
             </div>
         )
     }
-
-    addToShortlist() {
-        // send to api
-        // remove button
-        /*var tosend = {
-                        "user":"http://localhost:8080/api/users/1",
-            "opportunity":"http://localhost:8080/api/opportunities/4"
-        }*/
-        var tosend = "http://localhost:8080/api/users/1 http://localhost:8080/api/opportunities/4"
-        this.itemService.createItem(tosend);
-    }
-
+    
     scanPage = () => {
         browser.tabs.query({ active: true, currentWindow: true }, tabs => {
             const url = new URL(tabs[0].url);
@@ -228,6 +220,19 @@ class CurrentPage extends Component {
         //let querying = window.tabs.query({active: true, lastFocusedWindow: true})
         //console.log(querying);
         //return querying;
+    }
+
+    getTags() {
+
+        this.itemService.retrieveTags().then(tags => {
+            var dummyTagifyProps = this.state.tagifyProps;
+            dummyTagifyProps.whitelist = tags;
+            this.setState({
+                tagifyProps: dummyTagifyProps
+            })
+        }
+        );
+
     }
 
     submitTab(i) {
