@@ -1,0 +1,13 @@
+h1 {
+  font-weight: 400;
+  text-align: center;
+  margin: 10px;
+}
+
+.main__body {
+  padding-top: 10px;
+}
+
+#main__logobold {
+  font-weight: 600;
+}

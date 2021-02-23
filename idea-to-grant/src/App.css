@@ -1,13 +1,20 @@
-h1 {
-  font-weight: 400;
-  text-align: center;
-  margin: 10px;
+.app #google {
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+  margin: 20% auto 0 auto;
+  display: block;
+
+  background: url('images/btn_google_signin_light_normal_web@2x.png');
+  background-size: contain;
+  width: 306px;
+  height: 74px;
+
 }
 
-.app__body {
-  padding-top: 10px;
-}
-
-#app__logobold {
-  font-weight: 600;
+.app img {
+  width: 80%;
 }

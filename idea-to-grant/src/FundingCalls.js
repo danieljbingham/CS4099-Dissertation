@@ -13,9 +13,18 @@ class FundingCalls extends Component {
         this.itemService = new ItemService();
         this.urlClick = this.urlClick.bind(this);
         this.state = {
+            items: [],
             showDetails: false,
             tagifyRef: React.createRef(),
-            tagifyProps: {whitelist: []}
+            tagifyProps: {whitelist: []},
+            settings: {
+                dropdown:{
+                    maxItems: 20,           // <- mixumum allowed rendered suggestions
+                    enabled: 0,             // <- show suggestions on focus
+                    closeOnSelect: false    // <- do not hide the suggestions dropdown once an item has been selected
+                },
+                placeholder:"type some tags..."
+            }
         }
     }
 
@@ -31,22 +40,22 @@ class FundingCalls extends Component {
             <Opportunity opportunity={item} onClick={this.urlClick} />
         );
 
+        /*const onChange = e => {
+            //e.persist();
+            console.log("CHANGED:", e.target.value);
+            this.updateOpportunities(e.target.value);
+          };
+        */
+
         return (
             <div className="fundingCalls">
 
                 <Tags
                     tagifyRef={this.state.tagifyRef} // optional Ref object for the Tagify instance itself, to get access to inner-methods
-                    settings={{
-                        dropdown:{
-                            maxItems: 20,           // <- mixumum allowed rendered suggestions
-                            enabled: 0,             // <- show suggestions on focus
-                            closeOnSelect: false    // <- do not hide the suggestions dropdown once an item has been selected
-                        },
-                        placeholder:"type some tags..."
-                    }}
+                    settings={this.state.settings}
                     {...this.state.tagifyProps}   // dynamic props such as "loading", "showDropdown:'abc'", "value"
-                    onChange={e => (e.persist(), console.log("CHANGED:", e.target.value), this.updateOpportunities(e.target.value))}
-                />
+                    onChange={this.onChange}
+                    />
 
 
                 {listItems}
@@ -58,8 +67,8 @@ class FundingCalls extends Component {
     }
 
     getItems() {
-        this.itemService.retrieveOpportunities().then(items => {
-            this.setState({ items: items });
+        this.itemService.retrieveOpportunities().then(opps => {
+            this.setState({ items: opps });
         }
         );
     }
@@ -102,12 +111,14 @@ class FundingCalls extends Component {
             this.getItems();
         } else {
             var tagArr = JSON.parse(values).map(item => item.value);
-            this.itemService.retrieveTaggedOpportunities(tagArr).then(items => {
-                this.setState({ items: items });
+            this.itemService.retrieveTaggedOpportunities(tagArr).then(opps => {
+                this.setState({ items: opps });
             }
             );
         }
     }
+
+    onChange = e => (e.persist(), console.log("CHANGED:", e.target.value), this.updateOpportunities(e.target.value));
 }
 
 export default FundingCalls

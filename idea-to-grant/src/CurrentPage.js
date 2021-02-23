@@ -88,7 +88,7 @@ class CurrentPage extends Component {
                                 placeholder: "type some tags..."
                             }}
                             {...this.state.tagifyProps}   // dynamic props such as "loading", "showDropdown:'abc'", "value"
-                            onChange={e => (e.persist(), this.setTags(e.target.value))}
+                            onChange={e => (e.persist(), console.log("CHANGED:", e.target.value), this.setTags(e.target.value))}
                         />
                     </label>
 

@@ -1,113 +1,76 @@
 import React, { Component } from 'react'
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import 'react-tabs/style/react-tabs.css';
-
+import Main from './Main'
 import './App.css';
-import CurrentPage from './CurrentPage';
-import FundingCalls from './FundingCalls';
-import Shortlist from './Shortlist';
-{/*import Navigation from './Navigation';*/ }
+import Authorize from './authorize'
 
 class App extends Component {
   constructor(props) {
     super(props);
-    this.setTabIndex = this.setTabIndex.bind(this);
-    this.setCurrentPageTitle = this.setCurrentPageTitle.bind(this);
-    this.setCurrentPageUrl = this.setCurrentPageUrl.bind(this);
-    this.setCurrentPageDate = this.setCurrentPageDate.bind(this);
-    this.setCurrentPageDescription = this.setCurrentPageDescription.bind(this);
-    this.setCurrentPageTags = this.setCurrentPageTags.bind(this);
+    this.authorize = new Authorize();
+    this.onClick = this.onClick.bind(this);
+    this.getUserInfo = this.getUserInfo.bind(this);
+    this.notifyUser = this.notifyUser.bind(this);
+    this.logError = this.logError.bind(this);
     this.state = {
-      tabIndex: 0,
-      currentPageObject: {
-        title: "",
-        url: "",
-        date: "",
-        description: "",
-        tags: []
-      }
+      loggedIn: false
     }
   }
 
   render() {
-    const tabIndex = this.state.tabIndex;
+
+    let renderLoginOrMain;
+
+    if (this.state.loggedIn) {
+      renderLoginOrMain = <Main />;
+    } else {
+      renderLoginOrMain = <button id="google" type="submit" name="google" onClick={this.onClick}>
+      </button>
+
+    }
 
     return (
-    <div className="app">
-      {/*<h1>Idea to <span id="app__logobold">Grant</span></h1>*/}
-      <div className="app__body">
-        {/* <Navigation /> */}
-        {/* Content */}
-        {/* <CurrentPage /> */}
-
-        <Tabs selectedIndex={tabIndex} onSelect={index => this.setTabIndex(index)}>
-          <TabList>
-            <Tab>Current Page</Tab>
-            <Tab>Funding Calls</Tab>
-            <Tab>Shortlist</Tab>
-            <Tab>My Projects</Tab>
-          </TabList>
-
-          <TabPanel>
-            <CurrentPage changeTab={index => this.setTabIndex(index)} currentPageObject={this.state.currentPageObject}
-            setTitle={title => this.setCurrentPageTitle(title)} setUrl={url =>  this.setCurrentPageUrl(url)}
-            setDate={date =>  this.setCurrentPageDate(date)} setDescription={description =>  this.setCurrentPageDescription(description)}
-            setTags={tags =>  this.setCurrentPageTags(tags)}/>
-          </TabPanel>
-          <TabPanel>
-            <FundingCalls changeTab={index => this.setTabIndex(index)} currentPageObject={this.state.currentPageObject}
-            setTitle={title => this.setCurrentPageTitle(title)} setUrl={url =>  this.setCurrentPageUrl(url)}
-            setDate={date =>  this.setCurrentPageDate(date)} setDescription={description =>  this.setCurrentPageDescription(description)}
-            setTags={tags =>  this.setCurrentPageTags(tags)}/>
-          </TabPanel>
-          <TabPanel>
-            <Shortlist changeTab={index => this.setTabIndex(index)}/>
-          </TabPanel>
-          <TabPanel>
-            <Shortlist changeTab={index => this.setTabIndex(index)}/>
-          </TabPanel>
-        </Tabs>
-
+      <div className="app">
+        {renderLoginOrMain}
       </div>
-    </div>
     );
+
   }
 
-  setTabIndex(index) {
-    this.setState({tabIndex: index});
+  onClick() {
+    this.authorize.getAccessToken()
+      .then(this.getUserInfo)
+      .then(this.notifyUser)
+      .catch(this.logError);
   }
 
-  setCurrentPageTitle(title) {
-    var currentPageObject = this.state.currentPageObject;
-    currentPageObject.title = title;
-    this.setState({currentPageObject: currentPageObject});
+  getUserInfo(accessToken) {
+    const requestURL = "https://www.googleapis.com/oauth2/v1/userinfo?alt=json";
+    const requestHeaders = new Headers();
+    requestHeaders.append('Authorization', 'Bearer ' + accessToken);
+    const driveRequest = new Request(requestURL, {
+      method: "GET",
+      headers: requestHeaders
+    });
+
+    return fetch(driveRequest).then((response) => {
+      if (response.status === 200) {
+        return response.json();
+      } else {
+        throw response.status;
+      }
+    });
   }
 
-  setCurrentPageUrl(url) {
-    var currentPageObject = this.state.currentPageObject;
-    currentPageObject.url = url;
-    this.setState({currentPageObject: currentPageObject});
+  notifyUser(user) {
+    console.log(user);
+    this.setState({ loggedIn: true });
   }
 
-  setCurrentPageDate(date) {
-    var currentPageObject = this.state.currentPageObject;
-    currentPageObject.date = date;
-    this.setState({currentPageObject: currentPageObject});
+  logError(error) {
+    console.error(error);
   }
 
-  setCurrentPageDescription(description) {
-    var currentPageObject = this.state.currentPageObject;
-    currentPageObject.description = description;
-    this.setState({currentPageObject: currentPageObject});
-  }
-
-  setCurrentPageTags(tags) {
-    var currentPageObject = this.state.currentPageObject;
-    currentPageObject.tags = tags;
-    this.setState({currentPageObject: currentPageObject});
-  }
 }
-
 
 
 export default App;
