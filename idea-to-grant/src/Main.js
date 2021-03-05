@@ -16,6 +16,8 @@ class Main extends Component {
     this.setCurrentPageUrl = this.setCurrentPageUrl.bind(this);
     this.setCurrentPageDate = this.setCurrentPageDate.bind(this);
     this.setCurrentPageDescription = this.setCurrentPageDescription.bind(this);
+    this.setCurrentPageFullEcon = this.setCurrentPageFullEcon.bind(this);
+    this.setCurrentPageFundingDesc = this.setCurrentPageFundingDesc.bind(this);
     this.setCurrentPageTags = this.setCurrentPageTags.bind(this);
     this.state = {
       tabIndex: 0,
@@ -24,6 +26,8 @@ class Main extends Component {
         url: "",
         date: "",
         description: "",
+        fullEcon: false,
+        fundingDesc: "",
         tags: []
       }
     }
@@ -52,13 +56,15 @@ class Main extends Component {
             <CurrentPage changeTab={index => this.setTabIndex(index)} currentPageObject={this.state.currentPageObject}
             setTitle={title => this.setCurrentPageTitle(title)} setUrl={url =>  this.setCurrentPageUrl(url)}
             setDate={date =>  this.setCurrentPageDate(date)} setDescription={description =>  this.setCurrentPageDescription(description)}
-            setTags={tags =>  this.setCurrentPageTags(tags)}/>
+            setFullEcon={econ =>  this.setCurrentPageFullEcon(econ)} setFundingDesc={fundingDesc =>  this.setCurrentPageFundingDesc(fundingDesc)}
+            setTags={tags =>  this.setCurrentPageTags(tags)} user={this.props.user}/>
           </TabPanel>
           <TabPanel>
             <FundingCalls changeTab={index => this.setTabIndex(index)} currentPageObject={this.state.currentPageObject}
             setTitle={title => this.setCurrentPageTitle(title)} setUrl={url =>  this.setCurrentPageUrl(url)}
             setDate={date =>  this.setCurrentPageDate(date)} setDescription={description =>  this.setCurrentPageDescription(description)}
-            setTags={tags =>  this.setCurrentPageTags(tags)}/>
+            setFullEcon={econ =>  this.setCurrentPageFullEcon(econ)} setFundingDesc={fundingDesc =>  this.setCurrentPageFundingDesc(fundingDesc)}
+            setTags={tags =>  this.setCurrentPageTags(tags)} user={this.props.user}/>
           </TabPanel>
           <TabPanel>
             <Shortlist changeTab={index => this.setTabIndex(index)}/>
@@ -98,6 +104,18 @@ class Main extends Component {
   setCurrentPageDescription(description) {
     var currentPageObject = this.state.currentPageObject;
     currentPageObject.description = description;
+    this.setState({currentPageObject: currentPageObject});
+  }
+
+  setCurrentPageFullEcon(fullEcon) {
+    var currentPageObject = this.state.currentPageObject;
+    currentPageObject.fullEcon = fullEcon;
+    this.setState({currentPageObject: currentPageObject});
+  }
+
+  setCurrentPageFundingDesc(fundingDesc) {
+    var currentPageObject = this.state.currentPageObject;
+    currentPageObject.fundingDesc = fundingDesc;
     this.setState({currentPageObject: currentPageObject});
   }
 

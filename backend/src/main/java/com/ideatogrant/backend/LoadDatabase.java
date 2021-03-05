@@ -19,12 +19,12 @@ class LoadDatabase {
 
     @Bean
     CommandLineRunner initDatabase(UserRepository userRepository, OpportunityRepository opportunityRepository,
-                                   ApplicationRepository applicationRepository, PersonRepository personRepository) {
+                                   ApplicationRepository applicationRepository, TagPresetRepository tagPresetRepository) {
 
         return args -> {
-            User u = new User("Jack Bauer", "researcher");
+            /*User u = new User("Jack Bauer", "jbauer@gmail.com","researcher");
             log.info("Preloading " + userRepository.save(u));
-            log.info("Preloading " + userRepository.save(new User("David Palmer", "bdm")));
+            log.info("Preloading " + userRepository.save(new User("David Palmer", "dpalmer@gmail.com", "bdm")));
 
             log.info("Preloading " + opportunityRepository.save(new Opportunity("AI Systems Hardware/Software Co-Design",
                     "https://research.fb.com/programs/research-awards/proposals/ai-systems-hardware-software-co-design-request-for-proposals/",
@@ -43,23 +43,19 @@ class LoadDatabase {
             Optional<Opportunity> o1 = opportunityRepository.findById(3L);
             Opportunity o2 = o1.get();
 
-            Application a = new Application(u2, o2, "WOWW");
+            Application a = new Application(u2, o2, "This is my application");
             log.info("Preloading " + applicationRepository.save(a));
 
             Optional<Opportunity> o3 = opportunityRepository.findById(4L);
             Opportunity o4 = o3.get();
 
-            Application a1 = new Application(u2, o2, "WOWW");
-            //log.info("Preloading " + applicationRepository.save(a1));
+            Application a1 = new Application(u2, o4, "Applying to this soon");
+            log.info("Preloading " + applicationRepository.save(a1));
 
+            TagPreset tP = new TagPreset("HCI", u2, new HashSet<>(asList("hci", "ui", "gui", "design")));
+            log.info("Preloading " + tagPresetRepository.save(tP));
 
-            Person john = new Person();
-            john.setFirstName("John");
-            Person mary = new Person();
-            mary.setFirstName("Mary");
-            log.info("Preloading " + personRepository.save(john));
-            log.info("Preloading " + personRepository.save(mary));
-
+             */
         };
     }
 }

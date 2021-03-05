@@ -18,3 +18,31 @@
 .app img {
   width: 80%;
 }
+
+#register {
+  margin-top: 5%;
+}
+
+#register form {
+  width: 90%;
+  margin: 0 5%;
+
+}
+
+#register input[type=text] {
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  width: 100%;  
+}
+
+#register input[type=submit] {
+  margin-top: 20px;
+}
+
+#register select {
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  width: 100%;  
+}

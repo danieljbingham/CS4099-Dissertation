@@ -35,6 +35,16 @@ class ItemService {
     }
   }
 
+  async retrieveTagPresets(url) {
+    let response = await fetch(url);
+    if (!response.ok) {
+      this.handleResponseError(response);
+    } else {
+      let json = await response.json();
+      return json._embedded.tagPresets;
+    }
+  }
+
   async retrieveTaggedOpportunities(tags) {
     var tagsStr = tags.join(',');
     let response = await fetch(this.config.TAGGED_SEARCH_URL + "?tags=" + tagsStr);
@@ -114,6 +124,40 @@ class ItemService {
     }
   }
 
+  async createUser(newitem) {
+    let response = await fetch(this.config.USERS_COLLECTION_URL, {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(newitem)
+    });
+    if (!response.ok) {
+      this.handleResponseError(response);
+    } else {
+      let json = await response.json();
+      return json;
+    }
+  }
+
+  async createTagPreset(newitem) {
+    let response = await fetch(this.config.TAGPRESET_COLLECTION_URL, {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(newitem)
+    });
+    if (!response.ok) {
+      this.handleResponseError(response);
+    } else {
+      let json = await response.json();
+      return json;
+    }
+  }
+
   async deleteItem(itemlink) {
     console.log("ItemService.deleteItem():");
     console.log("item: " + itemlink);
@@ -173,6 +217,19 @@ class ItemService {
     }
   }
 
+  async checkUserExists(email) {
+    console.log(this.config.USER_SEARCH_URL + "?email=" + email);
+    let response = await fetch(this.config.USER_SEARCH_URL + "?email=" + email);
+    if (response.status === 404) {
+      // no user for this email
+      return null;
+    } else if (!response.ok) {
+      this.handleResponseError(response);
+    } else {
+      let json = await response.json();
+      return json;
+    }
+  }
 
   handleResponseError(response) {
     throw new Error("HTTP error, status = " + response.status);

@@ -32,6 +32,12 @@
     display: block;
 }
 
+.currentPage input[type="checkbox"] {
+    display: inline;
+    margin: 10px 0 14px 8px;
+    vertical-align: -2px;
+}
+
 .currentPage__addToShortlist {
     width: 90%;
     margin: 25px 5% 5px 5%;

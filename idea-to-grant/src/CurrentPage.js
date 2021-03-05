@@ -13,7 +13,6 @@ class CurrentPage extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleDate = this.handleDate.bind(this);
-        this.handleRoleChange = this.handleRoleChange.bind(this);
         this.getTags = this.getTags.bind(this);
         this.getURL = this.getURL.bind(this);
         this.submitTab = this.submitTab.bind(this);
@@ -26,7 +25,6 @@ class CurrentPage extends Component {
             tags: [],
             domain: "",
             dateChanged: "",
-            isResearcher: false,
             tagifyRef: React.createRef(),
             tagifyProps: { whitelist: [""], value: this.props.currentPageObject.tags }
 
@@ -41,22 +39,8 @@ class CurrentPage extends Component {
 
         return (
             <div className="currentPage">
-
+                <p>Welcome back {this.props.user.name}</p><br />
                 <button type="button" id="scan" onClick={this.scanPage}>Scan Page</button>
-
-                <div id="radios" onChange={this.handleRoleChange}>
-                    <p>I am a...</p>
-                    <label>
-                        <input type="radio" value="Business Development Manager" checked={this.state.isResearcher === false} onChange={this.handleRoleChange} />
-                        Business Development Manager
-                    </label>
-
-                    <label>
-                        <input type="radio" value="Researcher" checked={this.state.isResearcher === true} onChange={this.handleRoleChange} />
-                        Researcher
-                    </label>
-                </div>
-
 
                 <form onSubmit={this.handleSubmit}>
                     <label>
@@ -76,6 +60,15 @@ class CurrentPage extends Component {
                         <textarea value={this.props.currentPageObject.description} title="description" onChange={this.handleChange} />
                     </label>
                     <label>
+                        Full Economic Costing:
+                        <input type="checkbox" checked={this.props.currentPageObject.fullEcon} title="fullEcon" onChange={this.handleChange} />
+                        <br />
+                    </label>
+                    <label>
+                        Funding Information:
+                        <textarea value={this.props.currentPageObject.fundingDesc} title="fundingDesc" onChange={this.handleChange} />
+                    </label>
+                    <label>
                         Tags:
                         <Tags
                             tagifyRef={this.state.tagifyRef} // optional Ref object for the Tagify instance itself, to get access to inner-methods
@@ -92,7 +85,7 @@ class CurrentPage extends Component {
                         />
                     </label>
 
-                    <input type="submit" value={this.state.isResearcher ? "Add to shortlist" : "Submit opportunity"} />
+                    <input type="submit" value={this.props.user.role === "researcher" ? "Add to shortlist" : "Submit opportunity"} />
                 </form>
 
             </div>
@@ -132,29 +125,22 @@ class CurrentPage extends Component {
         let response = await this.itemService.createItem(requestBody);
         console.log("Response: " + JSON.stringify(response));
 
-        if (this.state.isResearcher === true) {
+        if (this.props.user.role === "researcher") {
             let shortlistRequest = {
-                // TODO unhardlink this
-                "user": "http://localhost:8080/api/users/1",
+                "user": this.props.user._links.self.href,
                 "opportunity": response._links.self.href
             }
             console.log("shortlistRequest: " + JSON.stringify(shortlistRequest));
             this.itemService.createShortlistItem(shortlistRequest)
         }
 
-        /*this.setState({
-            title: "",
-            url: "",
-            date: "",
-            description: ""
-        });*/
         this.props.setTitle("");
         this.props.setUrl("");
         this.props.setDate("");
         this.props.setDescription("");
 
 
-        if (this.state.isResearcher === true) {
+        if (this.props.user.role === "researcher") {
             this.submitTab(2);
         } else {
             this.submitTab(1);
@@ -162,10 +148,11 @@ class CurrentPage extends Component {
     }
 
     handleChange = (e) => {
-        e.preventDefault();
         let name = e.target.title;
         let value = e.target.value;
-        //this.setState({ [name]: value });
+        if (name != "fullEcon") {
+            e.preventDefault();
+        }
 
         switch (name) {
             case "title":
@@ -180,7 +167,13 @@ class CurrentPage extends Component {
             case "description":
                 this.props.setDescription(value);
                 break;
-        }
+            case "fullEcon":
+                this.props.setFullEcon(e.target.checked);
+                break; 
+            case "fundingDesc":
+                this.props.setFundingDesc(value);
+                break;
+            }
 
         if (name === "date") {
             this.setState({ dateChanged: true });
@@ -209,11 +202,6 @@ class CurrentPage extends Component {
     setTags = (values) => {
         var tagArr = JSON.parse(values).map(item => item.value);
         this.props.setTags(tagArr);
-    }
-
-    handleRoleChange = (e) => {
-        e.target.value === "Researcher" ? this.setState({ isResearcher: true }) : this.setState({ isResearcher: false });
-        console.log(e.target.value + " " + this.state.isResearcher);
     }
 
     getURL() {

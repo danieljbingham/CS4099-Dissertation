@@ -85,6 +85,7 @@ class Authorize {
   getAccessToken() {
     return this.authorize().then(this.validate);
   }
+
 }
 
 export default Authorize;

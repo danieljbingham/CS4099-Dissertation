@@ -14,7 +14,11 @@ class FundingCalls extends Component {
         this.urlClick = this.urlClick.bind(this);
         this.state = {
             items: [],
+            tags: [],
+            tagPresets: [],
             showDetails: false,
+            showTitleInput: false,
+            tagPresetTitle: "",
             tagifyRef: React.createRef(),
             tagifyProps: {whitelist: []},
             settings: {
@@ -23,7 +27,7 @@ class FundingCalls extends Component {
                     enabled: 0,             // <- show suggestions on focus
                     closeOnSelect: false    // <- do not hide the suggestions dropdown once an item has been selected
                 },
-                placeholder:"type some tags..."
+                placeholder:"Type some tags..."
             }
         }
     }
@@ -31,6 +35,7 @@ class FundingCalls extends Component {
     componentDidMount() {
         this.getItems();
         this.getTags();
+        this.getTagPresets();
     }
 
     render() {
@@ -40,6 +45,16 @@ class FundingCalls extends Component {
             <Opportunity opportunity={item} onClick={this.urlClick} />
         );
 
+        const tagPresets = this.state.tagPresets;
+        let tagPresetsOptions = [];
+        tagPresetsOptions = tagPresets.map((preset) =>
+            <option value={JSON.stringify(preset.tags)}>{preset.title}</option>
+        );
+        
+        let tagTitleInput = <div id="tagTitle">
+            <input type="text" value={this.props.tagPresetTitle} title="title" placeholder="Title of your saved search..."/>
+            <button id="saveTitle" title="Save Tag Preset" onClick={this.savePreset}>Save</button>
+        </div>
         /*const onChange = e => {
             //e.persist();
             console.log("CHANGED:", e.target.value);
@@ -55,8 +70,15 @@ class FundingCalls extends Component {
                     settings={this.state.settings}
                     {...this.state.tagifyProps}   // dynamic props such as "loading", "showDropdown:'abc'", "value"
                     onChange={this.onChange}
-                    />
+                />
+                <button id="save" title="Save Tag Preset" onClick={this.showPresetTitleInput}>+</button>
 
+                {this.state.showTitleInput && tagTitleInput}
+
+                <select onChange={this.chooseTagPreset} required="required">
+                    <option selected disabled hidden>Choose a saved search...</option>
+                    {tagPresetsOptions}
+                </select>
 
                 {listItems}
 
@@ -71,6 +93,33 @@ class FundingCalls extends Component {
             this.setState({ items: opps });
         }
         );
+    }
+
+    getTagPresets() {
+        this.itemService.retrieveTagPresets(this.props.user._links.tagPresets.href).then(presets => {
+            this.setState({ tagPresets: presets });
+        }
+        );
+    }
+
+    showPresetTitleInput = async (e) => {
+        e.preventDefault();
+        this.setState({showTitleInput: true});
+    }
+
+    savePreset = async (e) => {
+        e.preventDefault();
+        console.log("submit");
+        
+        let requestBody = {
+            "title": this.state.tagPresetTitle,
+            "user": this.props.user._links.self.href,
+            "tags": this.state.tags
+        };
+        console.log(requestBody);
+        let response = await this.itemService.createTagPreset(requestBody);
+        //console.log("Response: " + JSON.stringify(response));
+        this.setState({tagPresets: [...this.state.tagPresets, response], showTitleInput: false, tagPresetTitle: ""});
     }
 
     onSelect(itemLink) {
@@ -118,7 +167,24 @@ class FundingCalls extends Component {
         }
     }
 
-    onChange = e => (e.persist(), console.log("CHANGED:", e.target.value), this.updateOpportunities(e.target.value));
+    onChange = e => (e.persist(), console.log("CHANGED:", e.target.value), this.updateOpportunities(e.target.value), this.setState({ tags: e.target.value}));
+
+    onChange = (e) => {
+        e.persist();
+        console.log("CHANGED:", e.target.value);
+        this.updateOpportunities(e.target.value);
+        var tagArr = JSON.parse(e.target.value).map(item => item.value);
+        this.setState({ tags: tagArr})
+    }
+
+    chooseTagPreset = (e) => {
+        e.persist();
+        var parsedTags = JSON.parse(e.target.value);
+        console.log("CHANGED:", parsedTags);
+        this.state.tagifyRef.current.removeAllTags();
+        this.state.tagifyRef.current.addTags(parsedTags, true, true);
+        this.setState({ tags: parsedTags })
+    }
 }
 
 export default FundingCalls
