@@ -14,7 +14,7 @@ class Main extends Component {
     this.setTabIndex = this.setTabIndex.bind(this);
     this.setCurrentPageTitle = this.setCurrentPageTitle.bind(this);
     this.setCurrentPageUrl = this.setCurrentPageUrl.bind(this);
-    this.setCurrentPageDate = this.setCurrentPageDate.bind(this);
+    this.setCurrentPageDates = this.setCurrentPageDates.bind(this);
     this.setCurrentPageDescription = this.setCurrentPageDescription.bind(this);
     this.setCurrentPageFullEcon = this.setCurrentPageFullEcon.bind(this);
     this.setCurrentPageFundingDesc = this.setCurrentPageFundingDesc.bind(this);
@@ -24,7 +24,7 @@ class Main extends Component {
       currentPageObject: {
         title: "",
         url: "",
-        date: "",
+        dates: [{title:"", date:""}],
         description: "",
         fullEcon: false,
         fundingDesc: "",
@@ -55,14 +55,14 @@ class Main extends Component {
           <TabPanel>
             <CurrentPage changeTab={index => this.setTabIndex(index)} currentPageObject={this.state.currentPageObject}
             setTitle={title => this.setCurrentPageTitle(title)} setUrl={url =>  this.setCurrentPageUrl(url)}
-            setDate={date =>  this.setCurrentPageDate(date)} setDescription={description =>  this.setCurrentPageDescription(description)}
+            setDates={dates =>  this.setCurrentPageDates(dates)} setDescription={description =>  this.setCurrentPageDescription(description)}
             setFullEcon={econ =>  this.setCurrentPageFullEcon(econ)} setFundingDesc={fundingDesc =>  this.setCurrentPageFundingDesc(fundingDesc)}
             setTags={tags =>  this.setCurrentPageTags(tags)} user={this.props.user}/>
           </TabPanel>
           <TabPanel>
             <FundingCalls changeTab={index => this.setTabIndex(index)} currentPageObject={this.state.currentPageObject}
             setTitle={title => this.setCurrentPageTitle(title)} setUrl={url =>  this.setCurrentPageUrl(url)}
-            setDate={date =>  this.setCurrentPageDate(date)} setDescription={description =>  this.setCurrentPageDescription(description)}
+            setDates={dates =>  this.setCurrentPageDates(dates)} setDescription={description =>  this.setCurrentPageDescription(description)}
             setFullEcon={econ =>  this.setCurrentPageFullEcon(econ)} setFundingDesc={fundingDesc =>  this.setCurrentPageFundingDesc(fundingDesc)}
             setTags={tags =>  this.setCurrentPageTags(tags)} user={this.props.user}/>
           </TabPanel>
@@ -95,9 +95,9 @@ class Main extends Component {
     this.setState({currentPageObject: currentPageObject});
   }
 
-  setCurrentPageDate(date) {
+  setCurrentPageDates(dates) {
     var currentPageObject = this.state.currentPageObject;
-    currentPageObject.date = date;
+    currentPageObject.dates = dates;
     this.setState({currentPageObject: currentPageObject});
   }
 

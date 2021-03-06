@@ -13,17 +13,13 @@ class CurrentPage extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleDate = this.handleDate.bind(this);
+        this.handleDatesChange = this.handleDatesChange.bind(this);
+        this.addDate = this.addDate.bind(this);
         this.getTags = this.getTags.bind(this);
         this.getURL = this.getURL.bind(this);
         this.submitTab = this.submitTab.bind(this);
         this.state = {
             showDetails: false,
-            title: "",
-            url: "",
-            date: "",
-            description: "",
-            tags: [],
-            domain: "",
             dateChanged: "",
             tagifyRef: React.createRef(),
             tagifyProps: { whitelist: [""], value: this.props.currentPageObject.tags }
@@ -39,7 +35,7 @@ class CurrentPage extends Component {
 
         return (
             <div className="currentPage">
-                <p>Welcome back {this.props.user.name}</p><br />
+                {/*<p>Welcome back {this.props.user.name}</p><br />*/}
                 <button type="button" id="scan" onClick={this.scanPage}>Scan Page</button>
 
                 <form onSubmit={this.handleSubmit}>
@@ -51,22 +47,33 @@ class CurrentPage extends Component {
                         URL:
                         <input type="text" value={this.props.currentPageObject.url} title="url" onChange={this.handleChange} />
                     </label>
-                    <label>
+                    {/*<label>
                         Date (YYYY-MM-DD):
                         <input type="text" value={this.props.currentPageObject.date} title="date" onChange={this.handleChange} onBlur={this.handleDate} />
+                    </label>*/}
+                    <label>
+                        Deadlines:
+                            {this.props.currentPageObject.dates.map((dateObj, index) => 
+                                <div className="dates">
+                                <input type="text" title="title" value={dateObj.title} onChange={(e) => this.handleDatesChange(index, e)} />
+                                <input type="date" title="date" value={dateObj.date} onChange={(e) => this.handleDatesChange(index, e)} /> 
+                                </div>                               
+                            )}
+                        <button id="add" onClick={this.addDate} type="button">Add another date</button>
+
                     </label>
                     <label>
                         Description:
                         <textarea value={this.props.currentPageObject.description} title="description" onChange={this.handleChange} />
                     </label>
                     <label>
-                        Full Economic Costing:
-                        <input type="checkbox" checked={this.props.currentPageObject.fullEcon} title="fullEcon" onChange={this.handleChange} />
-                        <br />
-                    </label>
-                    <label>
                         Funding Information:
                         <textarea value={this.props.currentPageObject.fundingDesc} title="fundingDesc" onChange={this.handleChange} />
+                    </label>
+                    <label>
+                        Full Economic Costing?
+                        <input type="checkbox" checked={this.props.currentPageObject.fullEcon} title="fullEcon" onChange={this.handleChange} />
+                        <br />
                     </label>
                     <label>
                         Tags:
@@ -117,8 +124,11 @@ class CurrentPage extends Component {
         let requestBody = {
             "title": this.props.currentPageObject.title,
             "url": this.props.currentPageObject.url,
-            "date": this.props.currentPageObject.date,
+            "dates": JSON.stringify(this.props.currentPageObject.dates),
             "description": this.props.currentPageObject.description,
+            "fundingDescription": this.props.currentPageObject.fundingDesc,
+            "fullEcon": this.props.currentPageObject.fullEcon,
+            "public": this.props.user.role !== "researcher",
             "tags": this.props.currentPageObject.tags
         };
         console.log(requestBody);
@@ -136,9 +146,12 @@ class CurrentPage extends Component {
 
         this.props.setTitle("");
         this.props.setUrl("");
-        this.props.setDate("");
+        this.props.setDates([{title:"",date:""}]);
         this.props.setDescription("");
-
+        this.props.setFundingDesc("");
+        this.props.setFullEcon(false);
+        this.props.setTags([]);
+        this.state.tagifyRef.current.removeAllTags();
 
         if (this.props.user.role === "researcher") {
             this.submitTab(2);
@@ -168,6 +181,7 @@ class CurrentPage extends Component {
                 this.props.setDescription(value);
                 break;
             case "fullEcon":
+                console.log(e.target.checked);
                 this.props.setFullEcon(e.target.checked);
                 break; 
             case "fundingDesc":
@@ -185,6 +199,26 @@ class CurrentPage extends Component {
         }
     }
 
+    handleDatesChange = (index, e) => {
+        e.preventDefault();
+
+        let name = e.target.title;
+        let value = e.target.value;
+        var dummyDates = this.props.currentPageObject.dates;
+
+        switch (name) {
+            case "title":
+                dummyDates[index].title = value;
+                break;
+            case "date":
+                dummyDates[index].date = value;
+                break;
+        }
+
+        this.props.setDates(dummyDates);
+
+    }
+
     handleDate = (e) => {
         e.preventDefault();
         let value = e.target.value;
@@ -197,6 +231,12 @@ class CurrentPage extends Component {
         value = toDate(value).toISOString().split('T')[0];
         this.props.setDate(value);
         //this.setState({ "date": value });
+    }
+
+    addDate = () => {
+        var dummyDates = this.props.currentPageObject.dates;
+        dummyDates.push({title:"", date:""});
+        this.props.setDates(dummyDates);
     }
 
     setTags = (values) => {

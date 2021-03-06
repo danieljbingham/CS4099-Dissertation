@@ -24,7 +24,7 @@
 
 .currentPage form {
     width: 90%;
-    margin: 0 5%;
+    margin: 0 5% 30px 5%;
 
 }
 
@@ -34,7 +34,7 @@
 
 .currentPage input[type="checkbox"] {
     display: inline;
-    margin: 10px 0 14px 8px;
+    margin: 8px 0 12px 8px;
     vertical-align: -2px;
 }
 
@@ -105,6 +105,26 @@
     margin-top: -1px;
     height: 100%;
     vertical-align: middle;
+}
+
+.currentPage .dates {
+    display: flex;
+    flex-direction: row;
+}
+
+.currentPage .dates input[type=text] { 
+    width: 70%;
+}
+.currentPage .dates input[type=date] { 
+    padding: 12px 20px;
+    margin: 8px 0 8px 8px;
+    width: 60%;
+}
+
+.currentPage #add {
+    margin-left: 0;
+    margin-bottom: 10px;
+    display: block;
 }
 
 .currentPage Tags {

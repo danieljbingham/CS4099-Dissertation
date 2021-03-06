@@ -22,21 +22,28 @@ class Opportunity {
     private long id;
     private String title;
     private String url;
-    private String date;
+    @Column(columnDefinition = "TEXT")
+    private String dates;
     @Column(columnDefinition = "TEXT")
     private String description;
+    @Column(columnDefinition = "TEXT")
+    private String fundingDescription;
+    private boolean isFullEcon;
+    private boolean isPublic;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "TAGS") @Column(name = "TAG")
     private Set<String> tags = new HashSet<>();
 
-    public Opportunity(String title, String url, String date, String description, Set<String> tags) {
+    public Opportunity(String title, String url, String dates, String description, String fundingDescription,
+                       boolean isFullEcon, boolean isPublic, Set<String> tags) {
         this.title = title;
         this.url = url;
-        this.date = date;
+        this.dates = dates;
         this.description = description;
+        this.fundingDescription = fundingDescription;
+        this.isFullEcon = isFullEcon;
+        this.isPublic = isPublic;
         this.tags = tags;
     }
-
-
 }
