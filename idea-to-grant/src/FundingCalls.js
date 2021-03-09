@@ -62,6 +62,7 @@ class FundingCalls extends Component {
           };
         */
 
+        if (this.state.showDetails == false) {
         return (
             <div className="fundingCalls">
 
@@ -86,6 +87,24 @@ class FundingCalls extends Component {
 
             </div>
         )
+        } else {
+            const opp = this.state.selectedItem;
+    
+            return (
+                <div className="fundingCalls">
+                    <button type="button" onClick={this.backToOpportunities}>&lt; Show all opportunities</button>
+                    <p>{opp.title}</p>
+                    <p>{opp.description}</p>
+                    <p>{JSON.parse(opp.dates).map((date) =>
+                        <span>{date.title}: {date.date}<br /></span>
+                    )}</p>
+                    <p>{opp.fundingDescription}</p>
+                    <p>{opp.fullEcon ? "✔ Full economic costing" : "✗ Full economic costing"}</p>
+                    <p>Tags: {opp.tags.join(', ')}</p>
+
+                </div>
+            )
+        }
     }
 
     getItems() {
@@ -133,14 +152,29 @@ class FundingCalls extends Component {
         );
     }
 
-    urlClick(title, url, date, description, tags) {
+    backToOpportunities = async (e) => {
+        e.preventDefault();
+        this.setState({showDetails: false});
+    }
+
+    urlClick(item) {
+        this.setState({
+            showDetails: true,
+            selectedItem: item
+        });
+    }
+
+    /*
+    urlClick(title, url, dates, description, fundingDesc, fullEcon, tags) {
         this.props.setTitle(title);
         this.props.setUrl(url);
-        this.props.setDate(date);
+        this.props.setDates(dates);
         this.props.setDescription(description);
+        this.props.setFundingDesc(fundingDesc);
+        this.props.setFullEcon(fullEcon);
         this.props.setTags(tags);
         this.props.changeTab(0);
-    }
+    }*/
 
     getTags() {
 
@@ -166,8 +200,6 @@ class FundingCalls extends Component {
             );
         }
     }
-
-    onChange = e => (e.persist(), console.log("CHANGED:", e.target.value), this.updateOpportunities(e.target.value), this.setState({ tags: e.target.value}));
 
     onChange = (e) => {
         e.persist();

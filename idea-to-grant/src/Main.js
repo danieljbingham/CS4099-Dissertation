@@ -97,6 +97,9 @@ class Main extends Component {
 
   setCurrentPageDates(dates) {
     var currentPageObject = this.state.currentPageObject;
+    if (typeof dates === 'string') {
+      dates = JSON.parse(dates);
+    }
     currentPageObject.dates = dates;
     this.setState({currentPageObject: currentPageObject});
   }

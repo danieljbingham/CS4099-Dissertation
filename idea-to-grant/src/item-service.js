@@ -108,7 +108,7 @@ class ItemService {
   }
 
   async createItem(newitem) {
-    let response = await fetch(this.config.OPPORTUNITIES_COLLECTION_URL, {
+    let response = await fetch(this.config.OPPORTUNITIES_COLLECTION_URL_POST, {
       method: "POST",
       mode: "cors",
       headers: {
