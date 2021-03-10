@@ -22,12 +22,14 @@ class LoadDatabase {
                                    ApplicationRepository applicationRepository, TagPresetRepository tagPresetRepository) {
 
         return args -> {
-            log.info("Preloading " + opportunityRepository.save(new Opportunity("AI Systems Hardware/Software Co-Design",
+            /*log.info("Preloading " + opportunityRepository.save(new Opportunity("AI Systems Hardware/Software Co-Design",
                     "https://research.fb.com/programs/research-awards/proposals/ai-systems-hardware-software-co-design-request-for-proposals/",
                     "[{\"title\":\"Deadline\",\"date\":\"2020-04-30\"},{\"title\":\"Winners\",\"date\":\"2020-06-30\"}]",
                     "This supports research in the area of artificial intelligence hardware and algorithm codesign.",
                             "A total of six awards are available, worth up to USD 50,000 each.", true, true,
-                    new HashSet<>(asList("ai", "hardware")))));
+                    new HashSet<>(asList("ai", "hardware")))));*/
+
+
 
             /*User u = new User("Jack Bauer", "jbauer@gmail.com","researcher");
             log.info("Preloading " + userRepository.save(u));

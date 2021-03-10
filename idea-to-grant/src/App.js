@@ -63,7 +63,7 @@ class App extends Component {
 
   }
 
-  handleRoleChange(e) {
+  handleRoleChange = (e) => {
     this.setState({role: e.target.value});
   }
 

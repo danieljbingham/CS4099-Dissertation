@@ -28,7 +28,7 @@ class User {
 
     @OneToMany(mappedBy = "user", cascade={CascadeType.ALL})
     @JsonIgnoreProperties("user")
-    private List<Application> applications;
+    private List<Shortlist> shortlist;
 
     @OneToMany(mappedBy = "user", cascade={CascadeType.ALL})
     @JsonIgnoreProperties("user")

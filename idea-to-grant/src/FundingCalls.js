@@ -17,6 +17,7 @@ class FundingCalls extends Component {
             tags: [],
             tagPresets: [],
             showDetails: false,
+            selectedItem: {},
             showTitleInput: false,
             tagPresetTitle: "",
             tagifyRef: React.createRef(),
@@ -52,7 +53,7 @@ class FundingCalls extends Component {
         );
         
         let tagTitleInput = <div id="tagTitle">
-            <input type="text" value={this.props.tagPresetTitle} title="title" placeholder="Title of your saved search..."/>
+            <input type="text" value={this.props.tagPresetTitle} onChange={this.tagPresetTitleChange} title="title" placeholder="Title of your saved search..."/>
             <button id="saveTitle" title="Save Tag Preset" onClick={this.savePreset}>Save</button>
         </div>
         /*const onChange = e => {
@@ -61,47 +62,51 @@ class FundingCalls extends Component {
             this.updateOpportunities(e.target.value);
           };
         */
+        console.log(tagPresetsOptions);
 
         if (this.state.showDetails == false) {
-        return (
-            <div className="fundingCalls">
+            return (
+                <div className="fundingCalls">
 
-                <Tags
-                    tagifyRef={this.state.tagifyRef} // optional Ref object for the Tagify instance itself, to get access to inner-methods
-                    settings={this.state.settings}
-                    {...this.state.tagifyProps}   // dynamic props such as "loading", "showDropdown:'abc'", "value"
-                    onChange={this.onChange}
-                />
-                <button id="save" title="Save Tag Preset" onClick={this.showPresetTitleInput}>+</button>
+                    <Tags
+                        tagifyRef={this.state.tagifyRef} // optional Ref object for the Tagify instance itself, to get access to inner-methods
+                        settings={this.state.settings}
+                        {...this.state.tagifyProps}   // dynamic props such as "loading", "showDropdown:'abc'", "value"
+                        onChange={this.onChange}
+                    />
+                    <button id="save" title="Save Tag Preset" onClick={this.showPresetTitleInput}>+</button>
 
-                {this.state.showTitleInput && tagTitleInput}
+                    {this.state.showTitleInput && tagTitleInput}
 
-                <select onChange={this.chooseTagPreset} required="required">
-                    <option selected disabled hidden>Choose a saved search...</option>
-                    {tagPresetsOptions}
-                </select>
+                    <select onChange={this.chooseTagPreset} required="required">
+                        <option selected disabled hidden>Choose a saved search...</option>
+                        <option value={"[]"} >None</option>
+                        {tagPresetsOptions}
+                    </select>
 
-                {listItems}
+                    {listItems}
 
-                {/*@TODO pagination*/}
+                    {/*@TODO pagination*/}
 
-            </div>
-        )
+                </div>
+            )
         } else {
             const opp = this.state.selectedItem;
     
             return (
                 <div className="fundingCalls">
-                    <button type="button" onClick={this.backToOpportunities}>&lt; Show all opportunities</button>
-                    <p>{opp.title}</p>
-                    <p>{opp.description}</p>
-                    <p>{JSON.parse(opp.dates).map((date) =>
-                        <span>{date.title}: {date.date}<br /></span>
-                    )}</p>
-                    <p>{opp.fundingDescription}</p>
-                    <p>{opp.fullEcon ? "✔ Full economic costing" : "✗ Full economic costing"}</p>
-                    <p>Tags: {opp.tags.join(', ')}</p>
-
+                    <div className="detail">
+                        <button type="button" onClick={this.backToOpportunities}>Back</button>
+                        <h1>{opp.title}</h1>
+                        <p>{opp.description}</p>
+                        <p>{opp.fundingDescription}</p>
+                        <p>{opp.fullEcon ? "✔ Full economic costing" : "✗ Full economic costing"}</p>
+                        <p>{JSON.parse(opp.dates).map((date) =>
+                            <span>{date.title}: {date.date}<br /></span>
+                        )}</p>
+                        <p>Tags: {opp.tags.join(', ')}</p>
+                        <button type="button" onClick={this.handleSubmit}>Add to shortlist</button>
+                    </div>
                 </div>
             )
         }
@@ -126,6 +131,52 @@ class FundingCalls extends Component {
         this.setState({showTitleInput: true});
     }
 
+    handleChange = (e) => {
+        let name = e.target.title;
+        let value = e.target.value;
+        if (name != "fullEcon") {
+            e.preventDefault();
+        }
+
+        switch (name) {
+            case "title":
+                this.props.setTitle(value);
+                break;
+            case "url":
+                this.props.setUrl(value);
+                break;
+            case "date":
+                this.props.setDate(value);
+                break;
+            case "description":
+                this.props.setDescription(value);
+                break;
+            case "fullEcon":
+                console.log(e.target.checked);
+                this.props.setFullEcon(e.target.checked);
+                break; 
+            case "fundingDesc":
+                this.props.setFundingDesc(value);
+                break;
+            }
+
+        if (name === "date") {
+            this.setState({ dateChanged: true });
+        } else {
+            if (this.state.dateChanged === true) {
+                this.normaliseDate(this.props.currentPageObject.date);
+                this.setState({ dateChanged: false });
+            }
+        }
+    }
+
+    tagPresetTitleChange = (e) => {
+        e.preventDefault();
+
+        let value = e.target.value;
+        this.setState({ tagPresetTitle: value});
+    }
+
     savePreset = async (e) => {
         e.preventDefault();
         console.log("submit");
@@ -137,7 +188,7 @@ class FundingCalls extends Component {
         };
         console.log(requestBody);
         let response = await this.itemService.createTagPreset(requestBody);
-        //console.log("Response: " + JSON.stringify(response));
+        console.log("Response: " + JSON.stringify(response));
         this.setState({tagPresets: [...this.state.tagPresets, response], showTitleInput: false, tagPresetTitle: ""});
     }
 
@@ -155,6 +206,19 @@ class FundingCalls extends Component {
     backToOpportunities = async (e) => {
         e.preventDefault();
         this.setState({showDetails: false});
+    }
+
+    handleSubmit = async (e) => {
+        e.preventDefault();
+        let shortlistRequest = {
+            "user": this.props.user._links.self.href,
+            "opportunity": this.state.selectedItem._links.self.href,
+            "urls": "[]"
+        }
+        console.log("shortlistRequest: " + JSON.stringify(shortlistRequest));
+        this.itemService.createShortlistItem(shortlistRequest);
+        this.props.changeTab(2);
+
     }
 
     urlClick(item) {

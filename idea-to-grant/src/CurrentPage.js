@@ -138,7 +138,8 @@ class CurrentPage extends Component {
         if (this.props.user.role === "researcher") {
             let shortlistRequest = {
                 "user": this.props.user._links.self.href,
-                "opportunity": response._links.self.href
+                "opportunity": response._links.self.href,
+                "urls": "[]"
             }
             console.log("shortlistRequest: " + JSON.stringify(shortlistRequest));
             this.itemService.createShortlistItem(shortlistRequest)

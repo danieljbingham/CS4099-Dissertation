@@ -49,7 +49,7 @@ class Main extends Component {
             <Tab>Current Page</Tab>
             <Tab>Funding Calls</Tab>
             <Tab>Shortlist</Tab>
-            <Tab>My Projects</Tab>
+            {/*<Tab>My Projects</Tab>*/}
           </TabList>
 
           <TabPanel>
@@ -67,11 +67,11 @@ class Main extends Component {
             setTags={tags =>  this.setCurrentPageTags(tags)} user={this.props.user}/>
           </TabPanel>
           <TabPanel>
-            <Shortlist changeTab={index => this.setTabIndex(index)}/>
+            <Shortlist changeTab={index => this.setTabIndex(index)} user={this.props.user}/>
           </TabPanel>
-          <TabPanel>
+          {/*<TabPanel>
             <Shortlist changeTab={index => this.setTabIndex(index)}/>
-          </TabPanel>
+          </TabPanel>*/}
         </Tabs>
 
       </div>

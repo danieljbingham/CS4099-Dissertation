@@ -72,3 +72,17 @@
 .fundingCalls #tagTitle #saveTitle {
     margin-left: 12px;
 }
+
+.fundingCalls .detail {
+    width: 90%;
+    margin: 0 5% 30px 5%;
+}
+
+.fundingCalls .detail p {
+    padding-bottom: 18px;
+}
+
+.fundingCalls .detail button {
+    padding: 3px 8px;
+    margin: 6px 0;
+}

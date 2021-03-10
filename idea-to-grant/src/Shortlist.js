@@ -1,14 +1,19 @@
 import React, { Component } from 'react'
 import ItemService from './item-service'
 import Opportunity from './Opportunity';
+import './Shortlist.css'
 
 class Shortlist extends Component {
     constructor(props) {
         super(props);
         this.itemService = new ItemService();
-        this.onSelect = this.onSelect.bind(this);
+        this.urlClick = this.urlClick.bind(this)
         this.state = {
+            items: [],
+            shortlist: [],
+            selectedItem: {},
             showDetails: false,
+            urls: [{title:"", url:""}]
         }
     }
 
@@ -19,25 +24,66 @@ class Shortlist extends Component {
             console.log("cdm done boi " + this.state.opportunities)
         });*/
 
-        let items = await this.getItems();
-        //console.log("cdm done boi " + JSON.stringify(opps))
-        let opps = items.map(opp => <Opportunity opportunity={opp} />);
-        this.setState({ opportunities: opps });
-
+        this.getItems();
     }
 
     render() {
-        console.log("render!")
-        console.log(this.state.opportunities)
-        return (
-            <div className="shortlist">
 
-                {this.state.opportunities}
+        const items = this.state.items;
+        if (!items) return null;
+        const listItems = items.map((item) =>
+            <Opportunity opportunity={item} onClick={this.urlClick} />
+        );
+        console.log(this.state.shortlist);
 
-                {/*@TODO pagination*/}
+        if (this.state.showDetails == false) {
+            return (
+                <div className="shortlist">
+    
+                    {listItems}
+    
+                    {/*@TODO pagination*/}
+    
+                </div>
+            )
+        } else {
+            const opp = this.state.selectedItem;
 
-            </div>
-        )
+            return (
+                <div className="shortlist">
+                    <div className="detail">
+                        <button type="button" onClick={this.backToOpportunities}>Back</button>
+                        <h1>{opp.title}</h1>
+                        <p>{opp.description}</p>
+                        <p>{opp.fundingDescription}</p>
+                        <p>{opp.fullEcon ? "✔ Full economic costing" : "✗ Full economic costing"}</p>
+                        <p>{JSON.parse(opp.dates).map((date) =>
+                            <span>{date.title}: {date.date}<br /></span>
+                        )}</p>
+                        <p>Tags: {opp.tags.join(', ')}</p>
+                        
+                        <hr />
+                        <br />
+
+                        <label>
+                        Links:
+                            {this.state.urls.map((urlObj, index) => 
+                                <div className="links">
+                                <input type="text" title="title" placeholder="Resource name" value={urlObj.title} onChange={(e) => this.handleUrlsChange(index, e)} />
+                                <input type="text" title="url" placeholder="URL" value={urlObj.url} onChange={(e) => this.handleUrlsChange(index, e)} /> 
+                                </div>                               
+                            )}
+                        <button id="add" onClick={this.addUrl} type="button">Add another URL</button>
+
+                        </label>
+                        <br />
+                        <button id="submit" type="button">Submit changes</button>
+
+                    </div>
+                </div>
+            )
+        }
+
     }
 
     async getItem(itemLink) {
@@ -49,44 +95,73 @@ class Shortlist extends Component {
     }
 
     async getItems() {
-        /*this.itemService.retrieveApplications().then(async items => {
-            console.log("retrieved :)")
-            let listItems = await Promise.all(
-                items.map(async item => {
-                    let itemResponse = await this.itemService.getItem(item._links.opportunity.href);
-                    console.log("item response " + itemResponse)
-                    return itemResponse;
-                })
-            );
-            console.log("returning " + JSON.stringify(listItems));
-            return listItems;
-        }
-        );*/
-
-        //let items = await this.itemService.retrieveApplications();
-        let items = await this.itemService.retrieveShortlist();
-        console.log("retrieved :)")
-        let listItems = await Promise.all(
-            items.map(async item => {
-                let itemResponse = await this.itemService.getItem(item._links.opportunity.href);
-                console.log("item response " + itemResponse)
-                return itemResponse;
+        this.itemService.retrieveShortlist(this.props.user._links.shortlist.href).then(shortlists => {
+            console.log(JSON.stringify(shortlists));
+            this.setState({ shortlist:shortlists })
+            Promise.all(shortlists.map(item => {
+                return this.itemService.getItem(item._links.opportunity.href);
+            })).then(opps => {
+                this.setState({ items:opps })
             })
-        );
-        console.log("returning " + JSON.stringify(listItems));
-        return listItems;
-    }
-
-    onSelect(itemLink) {
-        this.clearState();
-        this.itemService.getItem(itemLink).then(item => {
-            this.setState({
-                showDetails: true,
-                selectedItem: item
-            });
         }
         );
     }
+
+    urlClick(item) {
+        const shortlistItem = this.getShortlistItem(item);
+        const urlsArr = JSON.parse(shortlistItem.urls);
+
+        if (urlsArr.length > 0) {
+            this.setState({
+                urls : JSON.parse(shortlistItem.urls)
+            })
+        }
+ 
+        this.setState({
+            showDetails: true,
+            selectedItem: item,
+        });
+    }
+
+    getShortlistItem = (opp) => {
+        var index = this.state.items.indexOf(opp);
+        return this.state.shortlist[index];
+    }
+
+    backToOpportunities = async (e) => {
+        e.preventDefault();
+        this.setState({
+            showDetails: false,
+            urls: [{title:"", url:""}]
+        });
+    }
+
+    handleUrlsChange = (index, e) => {
+        e.preventDefault();
+
+        let name = e.target.title;
+        let value = e.target.value;
+        var dummyUrls = this.state.urls;
+
+        switch (name) {
+            case "title":
+                dummyUrls[index].title = value;
+                break;
+            case "url":
+                dummyUrls[index].url = value;
+                break;
+        }
+
+        this.setState({urls:dummyUrls});
+
+    }
+
+    addUrl = () => {
+        var dummyUrls = this.state.urls;
+        dummyUrls.push({title:"", url:""});
+        this.setState({urls:dummyUrls});
+    }
+
 }
 
 export default Shortlist

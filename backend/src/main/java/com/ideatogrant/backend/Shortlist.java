@@ -20,7 +20,7 @@ class Shortlist {
     //@ManyToOne(fetch=FetchType.LAZY)
     @ManyToOne
     @JoinColumn(name = "USER_ID", referencedColumnName = "ID")
-    @JsonIgnoreProperties("applications")
+    @JsonIgnoreProperties("shortlist")
     private User user;
 
     //@ManyToOne(fetch=FetchType.LAZY)
@@ -28,8 +28,12 @@ class Shortlist {
     @JoinColumn(name = "OPPORTUNITY_ID", referencedColumnName = "ID")
     private Opportunity opportunity;
 
-    public Shortlist(User user, Opportunity opportunity) {
+    @Column(columnDefinition = "TEXT")
+    private String urls;
+
+    public Shortlist(User user, Opportunity opportunity, String urls) {
         this.user = user;
         this.opportunity = opportunity;
+        this.urls = urls;
     }
 }

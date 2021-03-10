@@ -67,8 +67,8 @@ class ItemService {
   }
 
   //TODO shortlist from user
-  async retrieveShortlist() {
-    let response = await fetch(this.config.SHORTLIST_COLLECTION_URL);
+  async retrieveShortlist(link) {
+    let response = await fetch(link);
     if (!response.ok) {
       this.handleResponseError(response);
     } else {

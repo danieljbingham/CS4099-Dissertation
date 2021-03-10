@@ -1,0 +1,41 @@
+
+.shortlist .detail {
+    width: 90%;
+    margin: 0 5% 30px 5%;
+}
+
+.shortlist .detail p {
+    padding-bottom: 18px;
+}
+
+.shortlist .detail button {
+    padding: 3px 8px;
+    margin: 6px 0;
+}
+
+
+.shortlist input {
+    display: block;
+}
+
+.shortlist input[type=text] {
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    width: 100%;  
+}
+
+.shortlist .links {
+    display: flex;
+    flex-direction: row;
+}
+
+.shortlist .links input[type=text] { 
+    width: 70%;
+}
+
+.shortlist #add {
+    margin-left: 0;
+    margin-bottom: 10px;
+    display: block;
+}
