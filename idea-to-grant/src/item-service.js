@@ -66,7 +66,6 @@ class ItemService {
     }
   }
 
-  //TODO shortlist from user
   async retrieveShortlist(link) {
     let response = await fetch(link);
     if (!response.ok) {
@@ -201,6 +200,26 @@ class ItemService {
     console.log(JSON.stringify(newitem));
     let response = await fetch(this.config.SHORTLIST_COLLECTION_URL, {
       method: 'POST',
+      mode: 'cors',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(newitem)
+    });
+    if (!response.ok) {
+      this.handleResponseError(response);
+    } else {
+      let json = await response.json();
+      console.log(JSON.stringify(json));
+      return json;
+    }
+  }
+
+  async editShortlistItem(newitem, url) {
+    console.log(JSON.stringify(newitem));
+    let response = await fetch(url, {
+      method: 'PATCH',
       mode: 'cors',
       headers: {
         'Accept': 'application/json',

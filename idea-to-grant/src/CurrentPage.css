@@ -52,10 +52,6 @@
     padding: 6px;
 }
 
-.currentPage button {
-    margin: 0 5%;
-}
-
 .currentPage progress {
     width: 90%;
     margin: 0 5%;
@@ -67,14 +63,31 @@
     margin: 8px 0;
     box-sizing: border-box;
     width: 100%;  
+    border: 1px solid #ddd;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.currentPage input[type=text]:hover {
+	border-color: #ccc;
+}
+.currentPage input[type=text]:focus {
+	border-color: #3595f6;
+	box-shadow: 0 0 1px 3px rgba(59, 153, 252, .7);
+	box-shadow: 0 0 0 3px -moz-mac-focusring;
+	color: #222;
+	outline: none;
 }
 
 .currentPage input[type=radio] {
     display: inline;
 }
 
-.currentPage input[type=submit] {
+.currentPage #submit-btn {
     margin-top: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
 .currentPage textarea {
@@ -82,10 +95,26 @@
     margin: 8px 0;
     box-sizing: border-box;
     padding: 12px 20px;
+    border: 1px solid #ddd;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.currentPage textarea:hover {
+	border-color: #ccc;
+}
+.currentPage textarea:focus {
+	border-color: #3595f6;
+	box-shadow: 0 0 1px 3px rgba(59, 153, 252, .7);
+	box-shadow: 0 0 0 3px -moz-mac-focusring;
+	color: #222;
+	outline: none;
 }
 
 .currentPage #scan {
-    margin-bottom: 5%;
+    width: 90%;
+    margin: 0 5% 5% 5%;
 }
 
 .currentPage #radios { 
@@ -119,12 +148,29 @@
     padding: 12px 20px;
     margin: 8px 0 8px 8px;
     width: 60%;
+    border: 1px solid #ddd;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.currentPage .dates input[type=date]:hover {
+	border-color: #ccc;
+}
+.currentPage .dates input[type=date]:focus {
+	border-color: #3595f6;
+	box-shadow: 0 0 1px 3px rgba(59, 153, 252, .7);
+	box-shadow: 0 0 0 3px -moz-mac-focusring;
+	color: #222;
+	outline: none;
 }
 
 .currentPage #add {
     margin-left: 0;
     margin-bottom: 10px;
     display: block;
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
 .currentPage Tags {

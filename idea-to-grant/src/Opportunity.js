@@ -5,7 +5,7 @@ import './Opportunity.css'
 class Opportunity extends Component {
 
     render() {
-        console.log("props: " + JSON.stringify(this.props));
+        //console.log("props: " + JSON.stringify(this.props));
         const title = this.props.opportunity.title;
         const description = this.props.opportunity.description;
         const fundingDesc = this.props.opportunity.fundingDescription;
@@ -23,7 +23,7 @@ class Opportunity extends Component {
                 <p>{fundingDesc}</p>
                 <p>{fullEconText}</p>
                 <p>Tags: {tagsStr}</p>
-                <p><a href={url} onClick={() => this.props.onClick(this.props.opportunity)}>Read more...</a></p>
+                <p className="link"><a href={url} onClick={() => this.props.onClick(this.props.opportunity)}>Read more...</a></p>
                 {/*<p><a href={url} onClick={() => this.props.onClick(title, url, dates, description, fundingDesc, fullEcon, tags)}>Read more...</a></p>*/}
             </div>
         )

@@ -59,7 +59,7 @@ class CurrentPage extends Component {
                                 <input type="date" title="date" value={dateObj.date} onChange={(e) => this.handleDatesChange(index, e)} /> 
                                 </div>                               
                             )}
-                        <button id="add" onClick={this.addDate} type="button">Add another date</button>
+                        <button id="add" className="secondary-btn" onClick={this.addDate} type="button">Add another date</button>
 
                     </label>
                     <label>
@@ -92,7 +92,7 @@ class CurrentPage extends Component {
                         />
                     </label>
 
-                    <input type="submit" value={this.props.user.role === "researcher" ? "Add to shortlist" : "Submit opportunity"} />
+                    <button type="submit" id="submit-btn">{this.props.user.role === "researcher" ? "Add to shortlist" : "Submit opportunity"}</button>
                 </form>
 
             </div>

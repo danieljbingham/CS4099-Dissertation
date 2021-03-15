@@ -9,8 +9,8 @@
 }
 
 .shortlist .detail button {
-    padding: 3px 8px;
-    margin: 6px 0;
+    padding: 6px 20px;
+    margin: 12px 0;
 }
 
 
@@ -38,4 +38,16 @@
     margin-left: 0;
     margin-bottom: 10px;
     display: block;
+}
+
+.shortlist input[type=checkbox] {
+    display: inline;
+    margin-left: 4px;
+
+}
+
+.shortlist .filters {
+    margin: 15px 15px 0 15px;
+    justify-content: space-between;
+    display: flex;
 }

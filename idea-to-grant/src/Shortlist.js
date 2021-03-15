@@ -11,9 +11,20 @@ class Shortlist extends Component {
         this.state = {
             items: [],
             shortlist: [],
+            filteredItems: [],
+            filteredShortlist: [],
             selectedItem: {},
             showDetails: false,
-            urls: [{title:"", url:""}]
+            editing: false,
+            urls: [{title:"", url:""}],
+            status: "",
+            filter: {
+                all: true,
+                shortlisted: true,
+                applying: true,
+                submitted: true,
+                closed: true                
+            }
         }
     }
 
@@ -29,17 +40,40 @@ class Shortlist extends Component {
 
     render() {
 
-        const items = this.state.items;
+        const items = this.state.filteredItems;
+
         if (!items) return null;
         const listItems = items.map((item) =>
             <Opportunity opportunity={item} onClick={this.urlClick} />
         );
-        console.log(this.state.shortlist);
 
         if (this.state.showDetails == false) {
             return (
                 <div className="shortlist">
-    
+
+                    <div className="filters">
+                    <label>
+                        Show all
+                        <input type="checkbox" checked={this.state.filter.all} title="all" onChange={this.handleChange} />
+                    </label>
+                    <label>
+                        Shortlisted
+                        <input type="checkbox" checked={this.state.filter.shortlisted} title="shortlisted" onChange={this.handleChange} />
+                    </label>
+                    <label>
+                        Applying
+                        <input type="checkbox" checked={this.state.filter.applying} title="applying" onChange={this.handleChange} />
+                    </label>
+                    <label>
+                        Submitted
+                        <input type="checkbox" checked={this.state.filter.submitted} title="submitted" onChange={this.handleChange} />
+                    </label>
+                    <label>
+                        Closed
+                        <input type="checkbox" checked={this.state.filter.closed} title="closed" onChange={this.handleChange} />
+                    </label>
+                    </div>
+
                     {listItems}
     
                     {/*@TODO pagination*/}
@@ -49,10 +83,68 @@ class Shortlist extends Component {
         } else {
             const opp = this.state.selectedItem;
 
+            var editing = null;
+            if (this.state.editing) {
+                editing = <div>
+                <br />
+                <label>
+                Links:
+                    {this.state.urls.map((urlObj, index) => 
+                        <div className="links">
+                        <input type="text" title="title" placeholder="Resource name" value={urlObj.title} onChange={(e) => this.handleUrlsChange(index, e)} />
+                        <input type="text" title="url" placeholder="URL" value={urlObj.url} onChange={(e) => this.handleUrlsChange(index, e)} /> 
+                        </div>                               
+                    )}
+                <button id="add" onClick={this.addUrl} type="button">Add another URL</button>
+
+                </label>
+                <br />
+
+                <label>
+                Set status:
+                <br />
+                <select value={this.state.status} onChange={this.handleDropdownChange} required="required">
+                {/*<option selected disabled hidden>Set status...</option>*/}
+                <option value="shortlisted">Shortlisted opportunity</option>
+                <option value="applying">Working on application</option>
+                <option value="submitted">Application submitted</option>
+                <option value="closed">Opportunity closed</option>
+                </select>
+
+                </label>
+                <br />
+                <br />
+
+                <button id="submit" type="button" onClick={this.submitChanges}>Submit changes</button>
+                </div>
+            } else {
+                editing = <div>
+                <br />
+                <label>
+                Links:
+                    {console.log(this.state.urls.length)}
+                    {this.state.urls.length > 1 || (this.state.urls[0].url != "" && this.state.urls[0].title != "") ?
+                    this.state.urls.map((urlObj, index) => 
+                        <div className="links">
+                        <p><a href={this.addhttp(urlObj.url)}>{urlObj.title}</a></p>
+                        </div>                               
+                    ) : <span> none<br /></span>              
+                    }
+                </label>
+                <br />
+
+                <label>
+                <p>Status: {this.state.status}</p>
+                </label>
+
+                <button id="edit" type="button" onClick={this.startEditing}>Edit</button>
+                </div>
+            }
+                
             return (
                 <div className="shortlist">
                     <div className="detail">
-                        <button type="button" onClick={this.backToOpportunities}>Back</button>
+                        <button type="button" className="secondary-btn" onClick={this.backToOpportunities}>Back</button>
                         <h1>{opp.title}</h1>
                         <p>{opp.description}</p>
                         <p>{opp.fundingDescription}</p>
@@ -63,21 +155,7 @@ class Shortlist extends Component {
                         <p>Tags: {opp.tags.join(', ')}</p>
                         
                         <hr />
-                        <br />
-
-                        <label>
-                        Links:
-                            {this.state.urls.map((urlObj, index) => 
-                                <div className="links">
-                                <input type="text" title="title" placeholder="Resource name" value={urlObj.title} onChange={(e) => this.handleUrlsChange(index, e)} />
-                                <input type="text" title="url" placeholder="URL" value={urlObj.url} onChange={(e) => this.handleUrlsChange(index, e)} /> 
-                                </div>                               
-                            )}
-                        <button id="add" onClick={this.addUrl} type="button">Add another URL</button>
-
-                        </label>
-                        <br />
-                        <button id="submit" type="button">Submit changes</button>
+                        {editing}
 
                     </div>
                 </div>
@@ -101,7 +179,8 @@ class Shortlist extends Component {
             Promise.all(shortlists.map(item => {
                 return this.itemService.getItem(item._links.opportunity.href);
             })).then(opps => {
-                this.setState({ items:opps })
+                this.setState({ items:opps });
+                this.filterItems(this.state.filter);
             })
         }
         );
@@ -110,22 +189,62 @@ class Shortlist extends Component {
     urlClick(item) {
         const shortlistItem = this.getShortlistItem(item);
         const urlsArr = JSON.parse(shortlistItem.urls);
+        console.log(shortlistItem);
+        console.log(urlsArr);
 
         if (urlsArr.length > 0) {
             this.setState({
-                urls : JSON.parse(shortlistItem.urls)
+                urls : JSON.parse(shortlistItem.urls),
             })
         }
  
         this.setState({
+            status : shortlistItem.status,
             showDetails: true,
             selectedItem: item,
+            editing: false
         });
     }
 
     getShortlistItem = (opp) => {
-        var index = this.state.items.indexOf(opp);
-        return this.state.shortlist[index];
+        var index = this.state.filteredItems.indexOf(opp);
+        return this.state.filteredShortlist[index];
+    }
+
+    setShortlistItem = (opp, shortlistItem) => {
+        var index = this.state.filteredItems.indexOf(opp);
+        let dummyShortlist = this.state.filteredShortlist;
+        dummyShortlist[index] = shortlistItem;
+        this.setState({
+            shortlist: dummyShortlist
+        });
+    }
+
+    startEditing = async (e) => {
+        e.preventDefault();
+        this.setState({
+            editing: true,
+        });
+    }
+
+    submitChanges = async (e) => {
+        e.preventDefault();
+
+        let shortlistItem = this.getShortlistItem(this.state.selectedItem);
+        let requestBody = {
+            "status": this.state.status,
+            "urls": JSON.stringify(this.state.urls),
+        };
+        console.log(requestBody);
+        let response = await this.itemService.editShortlistItem(requestBody, shortlistItem._links.self.href);
+        console.log("Response: " + JSON.stringify(response));
+
+        this.setShortlistItem(this.state.selectedItem, response);
+        this.setState({
+            editing: false,
+        });
+
+
     }
 
     backToOpportunities = async (e) => {
@@ -160,6 +279,96 @@ class Shortlist extends Component {
         var dummyUrls = this.state.urls;
         dummyUrls.push({title:"", url:""});
         this.setState({urls:dummyUrls});
+    }
+
+    addhttp(url) {
+        if (!/^(?:ht)tps?\:\/\//.test(url)) {
+            url = "http://" + url;
+        }
+        return url;
+    }
+
+    filterItems(f) {
+        let dummyFilteredItems = [];
+        let dummyFilteredShortlist = [];
+
+        this.state.shortlist.forEach((item, index) => {
+            if ((f.shortlisted && item.status == "shortlisted") ||
+                (f.applying && item.status == "applying") ||
+                (f.submitted && item.status == "submitted") ||
+                (f.closed && item.status == "closed")) {
+                    dummyFilteredShortlist.push(item);
+                    dummyFilteredItems.push(this.state.items[index]);
+                }
+        });
+
+        this.setState({
+            filter: f,
+            filteredItems: dummyFilteredItems,
+            filteredShortlist: dummyFilteredShortlist
+        });
+    }
+
+    handleDropdownChange = (e) => {
+        e.persist();
+        let selected = e.target.value;
+        console.log("CHANGED:", selected);
+        this.setState({ status: selected })
+    }
+
+    handleChange = (e) => {
+        let name = e.target.title;
+        let value = e.target.checked;
+        let dummyFilters = this.state.filter;
+
+        switch (name) {
+            case "all":
+                if (value) {
+                    dummyFilters = {
+                        all: true,
+                        shortlisted: true,
+                        applying: true,
+                        submitted: true,
+                        closed: true
+                    }                            
+                } else {
+                    dummyFilters = {
+                        all: false,
+                        shortlisted: false,
+                        applying: false,
+                        submitted: false,
+                        closed: false
+                    }    
+                }
+                break;
+            case "shortlisted":
+                dummyFilters.shortlisted = value;
+                break;
+            case "applying":
+                dummyFilters.applying = value;
+                break;
+            case "submitted":
+                dummyFilters.submitted = value;
+                break;
+            case "closed":
+                dummyFilters.closed = value;
+                break;     
+        }
+
+        if (dummyFilters.shortlisted && dummyFilters.applying && dummyFilters.submitted && dummyFilters.closed &&
+            !dummyFilters.all) {
+                dummyFilters.all = true;
+        }
+
+        if (!(dummyFilters.shortlisted && dummyFilters.applying && dummyFilters.submitted && dummyFilters.closed)) {
+            dummyFilters.all = false;
+        }
+
+        this.filterItems(dummyFilters);
+        /*this.setState({
+            filter: dummyFilters
+        })*/
+
     }
 
 }

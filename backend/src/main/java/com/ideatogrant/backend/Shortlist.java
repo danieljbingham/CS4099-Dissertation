@@ -31,9 +31,13 @@ class Shortlist {
     @Column(columnDefinition = "TEXT")
     private String urls;
 
-    public Shortlist(User user, Opportunity opportunity, String urls) {
+    @Column(columnDefinition = "TEXT")
+    private String status;
+
+    public Shortlist(User user, Opportunity opportunity, String urls, String status) {
         this.user = user;
         this.opportunity = opportunity;
         this.urls = urls;
+        this.status = status;
     }
 }

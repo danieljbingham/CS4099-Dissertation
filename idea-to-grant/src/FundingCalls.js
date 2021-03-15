@@ -96,7 +96,7 @@ class FundingCalls extends Component {
             return (
                 <div className="fundingCalls">
                     <div className="detail">
-                        <button type="button" onClick={this.backToOpportunities}>Back</button>
+                        <button type="button" className="secondary-btn" onClick={this.backToOpportunities}>Back</button>
                         <h1>{opp.title}</h1>
                         <p>{opp.description}</p>
                         <p>{opp.fundingDescription}</p>
@@ -213,7 +213,8 @@ class FundingCalls extends Component {
         let shortlistRequest = {
             "user": this.props.user._links.self.href,
             "opportunity": this.state.selectedItem._links.self.href,
-            "urls": "[]"
+            "urls": "[]",
+            "status": "shortlisted"
         }
         console.log("shortlistRequest: " + JSON.stringify(shortlistRequest));
         this.itemService.createShortlistItem(shortlistRequest);

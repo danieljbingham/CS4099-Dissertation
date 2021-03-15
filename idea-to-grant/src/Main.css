@@ -11,3 +11,64 @@ h1 {
 #main__logobold {
   font-weight: 600;
 }
+
+.react-tabs__tab-list {
+  border-bottom: 1px solid #ddd;
+  justify-content: space-between;
+  display: flex;
+  width: 90%;
+  margin: 0 5%;
+}
+
+.react-tabs__tab--selected {
+  border-radius: 0;
+  border-color: #ddd;
+  background-color: #3595f6;
+  color: #ffffff;
+}
+
+.react-tabs__tab--selected:hover {
+  background-color: #45a1ff !important;
+}
+
+.react-tabs__tab {
+  padding: 6px 18px;
+  flex-grow: 1;
+  flex-basis: 0;
+  text-align: center;
+}
+
+.react-tabs__tab:hover {
+  background-color: #f0f7ff;
+}
+
+button {
+  appearance: none;
+  border: 0;
+  background-color: #3595f6;
+  text-align: center;
+  padding: 10px 0;
+  color: white;
+  border-radius: 20px;
+}
+
+button:hover {
+  background-color: #45a1ff;
+  cursor: pointer;
+}
+
+button.secondary-btn {
+  background: white;
+  border: 1px solid #3595f6;
+  color: #3595f6;
+}
+
+button.secondary-btn:hover {
+  background-color: #3595f6;
+  color: white;
+  border: 1px solid transparent;
+}
+
+hr {
+  border: 1px solid #ddd;
+}
