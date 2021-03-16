@@ -90,12 +90,13 @@ class Shortlist extends Component {
                 <label>
                 Links:
                     {this.state.urls.map((urlObj, index) => 
-                        <div className="links">
+                        <div className="linksEditing">
                         <input type="text" title="title" placeholder="Resource name" value={urlObj.title} onChange={(e) => this.handleUrlsChange(index, e)} />
                         <input type="text" title="url" placeholder="URL" value={urlObj.url} onChange={(e) => this.handleUrlsChange(index, e)} /> 
+                        <button id="remove" title="Remove" onClick={(e) => this.removeUrl(index, e)}>-</button>
                         </div>                               
                     )}
-                <button id="add" onClick={this.addUrl} type="button">Add another URL</button>
+                <button id="add" className="secondary-btn" onClick={this.addUrl} type="button">Add another URL</button>
 
                 </label>
                 <br />
@@ -113,7 +114,6 @@ class Shortlist extends Component {
 
                 </label>
                 <br />
-                <br />
 
                 <button id="submit" type="button" onClick={this.submitChanges}>Submit changes</button>
                 </div>
@@ -125,9 +125,9 @@ class Shortlist extends Component {
                     {console.log(this.state.urls.length)}
                     {this.state.urls.length > 1 || (this.state.urls[0].url != "" && this.state.urls[0].title != "") ?
                     this.state.urls.map((urlObj, index) => 
-                        <div className="links">
-                        <p><a href={this.addhttp(urlObj.url)}>{urlObj.title}</a></p>
-                        </div>                               
+                        <a href={this.addhttp(urlObj.url)} className="links">
+                        <p>{urlObj.title}</p>
+                        </a>                               
                     ) : <span> none<br /></span>              
                     }
                 </label>
@@ -273,6 +273,13 @@ class Shortlist extends Component {
 
         this.setState({urls:dummyUrls});
 
+    }
+
+    removeUrl = (index, e) => {
+        e.preventDefault();
+        var dummyUrls = this.state.urls;
+        dummyUrls.splice(index, 1);
+        this.setState({urls:dummyUrls});
     }
 
     addUrl = () => {

@@ -2,13 +2,6 @@
     margin-top: 5%;
 }
 
-.currentPage textarea {
-    width: 90%;
-    height: 125px;
-    margin: 0 5%;
-    padding: 6px;
-}
-
 .currentPage h1 {
     text-align: left;
     margin: 25px 5% 5px 5%;
@@ -34,7 +27,7 @@
 
 .currentPage input[type="checkbox"] {
     display: inline;
-    margin: 8px 0 12px 8px;
+    margin: 8px 0 18px 8px;
     vertical-align: -2px;
 }
 
@@ -60,7 +53,7 @@
 
 .currentPage input[type=text] {
     padding: 12px 20px;
-    margin: 8px 0;
+    margin: 8px 0 18px 0;
     box-sizing: border-box;
     width: 100%;  
     border: 1px solid #ddd;
@@ -92,7 +85,8 @@
 
 .currentPage textarea {
     width: 100%;
-    margin: 8px 0;
+    height: 125px;
+    margin: 8px 0 18px 0;
     box-sizing: border-box;
     padding: 12px 20px;
     border: 1px solid #ddd;
@@ -146,7 +140,7 @@
 }
 .currentPage .dates input[type=date] { 
     padding: 12px 20px;
-    margin: 8px 0 8px 8px;
+    margin: 8px 0 18px 8px;
     width: 60%;
     border: 1px solid #ddd;
     -moz-appearance: none;
@@ -166,8 +160,7 @@
 }
 
 .currentPage #add {
-    margin-left: 0;
-    margin-bottom: 10px;
+    margin: -8px 0 18px 0;
     display: block;
     padding-left: 20px;
     padding-right: 20px;
