@@ -138,7 +138,7 @@ class Shortlist extends Component {
                 </label>
 
                 <button id="edit" type="button" onClick={this.startEditing}>Edit</button>
-                <a id="share" class="secondary-btn" href="mailto:?body=tisbody&subject=thisbethesubject">Share by email</a>
+                <a id="share" class="secondary-btn" onClick={(e) => window.open(this.mailtoLink())} target="_blank">Share by email</a>
                 </div>
             }
                 
@@ -163,6 +163,23 @@ class Shortlist extends Component {
             )
         }
 
+    }
+
+    mailtoLink() {
+        var opp = this.state.selectedItem;
+        var dates = JSON.parse(opp.dates).map((date) => date.title + ": " + date.date);
+        var links = this.state.urls.map((url) => url.title + ": " + url.url);
+
+        var subjectStr = "Funding Opportunity: " + opp.title;
+        var bodyStr =   "I came across a funding opportunity that I thought you might like to see!%0A%0A" +
+                        opp.title + " %0A%0A" +
+                        opp.description + " %0A%0A" +
+                        opp.fundingDescription + " %0A%0A" +
+                        dates.join(" %0A") + " %0A%0A" +
+                        links.join(" %0A") + " %0A%0A" +
+                        "Read more at " + opp.url + " %0A%0A" +
+                        "Shared from Idea to Grant browser extension";
+        return "mailto:?body=" + bodyStr.replace(/ /g, '%20') + "&subject=" + subjectStr.replace(/ /g, '%20');
     }
 
     async getItem(itemLink) {
