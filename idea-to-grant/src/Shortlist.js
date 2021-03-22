@@ -138,6 +138,7 @@ class Shortlist extends Component {
                 </label>
 
                 <button id="edit" type="button" onClick={this.startEditing}>Edit</button>
+                <a id="share" class="secondary-btn" href="mailto:?body=tisbody&subject=thisbethesubject">Share by email</a>
                 </div>
             }
                 

@@ -57,13 +57,13 @@ button:hover {
   cursor: pointer;
 }
 
-button.secondary-btn {
+.secondary-btn {
   background: white;
   border: 1px solid #3595f6;
   color: #3595f6;
 }
 
-button.secondary-btn:hover {
+.secondary-btn:hover {
   background-color: #3595f6;
   color: white;
   border: 1px solid transparent;
