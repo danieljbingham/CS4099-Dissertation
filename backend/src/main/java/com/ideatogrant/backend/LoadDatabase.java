@@ -19,7 +19,7 @@ class LoadDatabase {
 
     @Bean
     CommandLineRunner initDatabase(UserRepository userRepository, OpportunityRepository opportunityRepository,
-                                   ApplicationRepository applicationRepository, TagPresetRepository tagPresetRepository) {
+                                   TagPresetRepository tagPresetRepository) {
 
         return args -> {
             /*log.info("Preloading " + opportunityRepository.save(new Opportunity("AI Systems Hardware/Software Co-Design",
