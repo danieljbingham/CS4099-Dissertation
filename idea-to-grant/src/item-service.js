@@ -25,13 +25,26 @@ class ItemService {
     }
   }
 
-  async retrieveOpportunities() {
-    let response = await fetch(this.config.OPPORTUNITIES_COLLECTION_URL);
+  async retrieveOpportunities(i) {
+    let response = await fetch(this.config.OPPORTUNITIES_COLLECTION_URL + "?size=5&page=" + i);
+    if (!response.ok) {
+      this.handleResponseError(response);
+    } else {
+      console.log(response);
+      let json = await response.json();
+      return json._embedded.opportunities;
+    }
+  }
+
+  async retrieveOpportunitiesPages() {
+    let response = await fetch(this.config.OPPORTUNITIES_COLLECTION_URL + "?size=5");
     if (!response.ok) {
       this.handleResponseError(response);
     } else {
       let json = await response.json();
-      return json._embedded.opportunities;
+      console.log(response);
+      console.log(json.page.totalPages);
+      return json.page.totalPages;
     }
   }
 
@@ -66,13 +79,28 @@ class ItemService {
     }
   }
 
-  async retrieveShortlist(link) {
-    let response = await fetch(link);
+  async retrieveShortlist(link, i) {
+    let response = await fetch(this.config.SHORTLIST_COLLECTION_URL + "?user=" + link + "&size=5" + "&page=" + i);
     if (!response.ok) {
       this.handleResponseError(response);
     } else {
       let json = await response.json();
+      console.log(response);
+      console.log(json);
       return json._embedded.shortlists;
+    }
+  }
+
+  async retrieveShortlistPages(link) {
+    let response = await fetch(this.config.SHORTLIST_COLLECTION_URL + "?user=" + link + "&size=5");
+    if (!response.ok) {
+      this.handleResponseError(response);
+    } else {
+      let json = await response.json();
+      console.log(response);
+      console.log(json);
+      console.log(json.page.totalPages);
+      return json.page.totalPages;
     }
   }
 

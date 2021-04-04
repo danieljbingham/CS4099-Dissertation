@@ -46,9 +46,10 @@ class Main extends Component {
 
         <Tabs selectedIndex={tabIndex} onSelect={index => this.setTabIndex(index)}>
           <TabList>
-            <Tab>Current Page</Tab>
+            <Tab>Add Opportunity</Tab>
             <Tab>Funding Calls</Tab>
-            <Tab>Shortlist</Tab>
+            {(this.props.user.role === "researcher") && 
+            <Tab>Shortlist</Tab>}
             {/*<Tab>My Projects</Tab>*/}
           </TabList>
 
@@ -66,12 +67,12 @@ class Main extends Component {
             setFullEcon={econ =>  this.setCurrentPageFullEcon(econ)} setFundingDesc={fundingDesc =>  this.setCurrentPageFundingDesc(fundingDesc)}
             setTags={tags =>  this.setCurrentPageTags(tags)} user={this.props.user}/>
           </TabPanel>
-          <TabPanel>
-            <Shortlist changeTab={index => this.setTabIndex(index)} user={this.props.user}/>
-          </TabPanel>
-          {/*<TabPanel>
-            <Shortlist changeTab={index => this.setTabIndex(index)}/>
-          </TabPanel>*/}
+          {(this.props.user.role === "researcher") && 
+            <TabPanel>
+              <Shortlist changeTab={index => this.setTabIndex(index)} user={this.props.user}/>
+            </TabPanel>
+          }
+
         </Tabs>
 
       </div>

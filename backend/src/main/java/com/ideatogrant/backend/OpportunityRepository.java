@@ -26,7 +26,7 @@ interface OpportunityRepository extends PagingAndSortingRepository<Opportunity, 
     List<Opportunity> getTagged(@Param("tags") List<String> tags);
 
     @RestResource(path = "getOpportunities", rel = "getOpportunities")
-    public List<Opportunity> findByIsPublicTrue();
+    public Page<Opportunity> findByIsPublicTrue(Pageable pageable);
 
     /*@Query("SELECT DISTINCT(tags) FROM Opportunity ")
     List<String> getAllTags();*/

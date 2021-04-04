@@ -23,7 +23,7 @@ class Shortlist {
     @JsonIgnoreProperties("shortlist")
     private User user;
 
-    //@ManyToOne(fetch=FetchType.LAZY)
+    //@ManyToOne(fetch=FetchType.EAGER)
     @ManyToOne
     @JoinColumn(name = "OPPORTUNITY_ID", referencedColumnName = "ID")
     private Opportunity opportunity;

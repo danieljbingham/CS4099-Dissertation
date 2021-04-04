@@ -2,6 +2,7 @@ import React, { Component, useRef, useState } from 'react'
 import ItemService from './item-service'
 import Opportunity from './Opportunity';
 import Tags from "@yaireo/tagify/dist/react.tagify" // React-wrapper file
+import ReactPaginate from 'react-paginate';
 import "@yaireo/tagify/dist/tagify.css" // Tagify CSS
 import './FundingCalls.css'
 
@@ -14,6 +15,7 @@ class FundingCalls extends Component {
         this.urlClick = this.urlClick.bind(this);
         this.state = {
             items: [],
+            pages: 0,
             tags: [],
             tagPresets: [],
             showDetails: false,
@@ -34,7 +36,8 @@ class FundingCalls extends Component {
     }
 
     componentDidMount() {
-        this.getItems();
+        this.getPages();
+        this.getItems(0);
         this.getTags();
         this.getTagPresets();
     }
@@ -86,7 +89,18 @@ class FundingCalls extends Component {
 
                     {listItems}
 
-                    {/*@TODO pagination*/}
+                    <ReactPaginate
+                        previousLabel={'<'}
+                        nextLabel={'>'}
+                        breakLabel={'...'}
+                        breakClassName={'break'}
+                        pageCount={this.state.pages}
+                        marginPagesDisplayed={2}
+                        pageRangeDisplayed={5}
+                        onPageChange={this.handlePageClick}
+                        containerClassName={'pagination'}
+                        activeClassName={'active'}
+                    />
 
                 </div>
             )
@@ -105,16 +119,25 @@ class FundingCalls extends Component {
                             <span>{date.title}: {date.date}<br /></span>
                         )}</p>
                         <p>Tags: {opp.tags.join(', ')}</p>
-                        <button type="button" onClick={this.handleSubmit}>Add to shortlist</button>
+                        {(this.props.user.role === "researcher") && 
+                            <button type="button" onClick={this.handleSubmit}>Add to shortlist</button>
+                        }
                     </div>
                 </div>
             )
         }
     }
 
-    getItems() {
-        this.itemService.retrieveOpportunities().then(opps => {
+    getItems(i) {
+        this.itemService.retrieveOpportunities(i).then(opps => {
             this.setState({ items: opps });
+        }
+        );
+    }
+
+    getPages() {
+        this.itemService.retrieveOpportunitiesPages().then(pages => {
+            this.setState({ pages: pages });
         }
         );
     }
@@ -254,9 +277,14 @@ class FundingCalls extends Component {
 
     }
 
+    handlePageClick = (data) => {
+        let selected = data.selected;
+        this.getItems(selected);
+    };
+
     updateOpportunities(values) {
         if (values === "") {
-            this.getItems();
+            this.getItems(0);
         } else {
             var tagArr = JSON.parse(values).map(item => item.value);
             this.itemService.retrieveTaggedOpportunities(tagArr).then(opps => {

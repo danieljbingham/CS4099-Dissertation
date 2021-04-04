@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import ItemService from './item-service'
 import Opportunity from './Opportunity';
+import ReactPaginate from 'react-paginate';
 import './Shortlist.css'
 
 class Shortlist extends Component {
@@ -10,6 +11,7 @@ class Shortlist extends Component {
         this.urlClick = this.urlClick.bind(this)
         this.state = {
             items: [],
+            pages: 0,
             shortlist: [],
             filteredItems: [],
             filteredShortlist: [],
@@ -35,7 +37,8 @@ class Shortlist extends Component {
             console.log("cdm done boi " + this.state.opportunities)
         });*/
 
-        this.getItems();
+        this.getPages();
+        this.getItems(0);
     }
 
     render() {
@@ -76,7 +79,18 @@ class Shortlist extends Component {
 
                     {listItems}
     
-                    {/*@TODO pagination*/}
+                    <ReactPaginate
+                        previousLabel={'<'}
+                        nextLabel={'>'}
+                        breakLabel={'...'}
+                        breakClassName={'break'}
+                        pageCount={this.state.pages}
+                        marginPagesDisplayed={2}
+                        pageRangeDisplayed={5}
+                        onPageChange={this.handlePageClick}
+                        containerClassName={'pagination'}
+                        activeClassName={'active'}
+                    />
     
                 </div>
             )
@@ -190,8 +204,8 @@ class Shortlist extends Component {
         );
     }
 
-    async getItems() {
-        this.itemService.retrieveShortlist(this.props.user._links.shortlist.href).then(shortlists => {
+    async getItems(i) {
+        this.itemService.retrieveShortlist(this.props.user._links.self.href, i).then(shortlists => {
             console.log(JSON.stringify(shortlists));
             this.setState({ shortlist:shortlists })
             Promise.all(shortlists.map(item => {
@@ -200,6 +214,13 @@ class Shortlist extends Component {
                 this.setState({ items:opps });
                 this.filterItems(this.state.filter);
             })
+        }
+        );
+    }
+
+    getPages() {
+        this.itemService.retrieveShortlistPages(this.props.user._links.self.href).then(pages => {
+            this.setState({ pages: pages });
         }
         );
     }
@@ -395,6 +416,11 @@ class Shortlist extends Component {
         })*/
 
     }
+    
+    handlePageClick = (data) => {
+        let selected = data.selected;
+        this.getItems(selected);
+    };
 
 }
 
