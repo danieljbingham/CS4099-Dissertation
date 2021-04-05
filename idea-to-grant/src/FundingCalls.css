@@ -87,3 +87,15 @@
     padding: 6px 20px;
     margin: 12px 0;
 }
+
+.fundingCalls #remove {
+    border: 1px red solid;
+    background-color: white;
+    color: red;
+}
+
+.fundingCalls #remove:hover {
+    border: 1px transparent solid;
+    color: white;
+    background-color: red;
+}

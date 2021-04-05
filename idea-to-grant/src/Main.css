@@ -77,12 +77,13 @@ ul.pagination {
   list-style-type: none;
   display: inline-block;
   padding: 15px;
-  cursor: pointer;
   display: flex;
   justify-content: center;
+  margin-bottom: 15px;
 }
 
 .pagination li {
+  cursor: pointer;
   display: inline-block;
 }
 

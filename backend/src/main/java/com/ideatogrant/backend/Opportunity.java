@@ -1,9 +1,7 @@
 package com.ideatogrant.backend;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Arrays;
@@ -29,6 +27,8 @@ class Opportunity {
     @Column(columnDefinition = "TEXT")
     private String fundingDescription;
     private boolean isFullEcon;
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     private boolean isPublic;
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -45,5 +45,13 @@ class Opportunity {
         this.isFullEcon = isFullEcon;
         this.isPublic = isPublic;
         this.tags = tags;
+    }
+
+    public boolean getIsPublic() {
+        return isPublic;
+    }
+
+    public void setIsPublic(boolean isPublic) {
+        this.isPublic = isPublic;
     }
 }

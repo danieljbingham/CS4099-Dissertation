@@ -90,7 +90,7 @@
     display: flex;
 }
 
-#remove {
+.shortlist #remove {
     border: 1px red solid;
     border-radius: 50%;
     width: 1.65em;
@@ -104,7 +104,7 @@
     flex: 0 0 20px;
 }
 
-#remove:hover {
+.shortlist #remove:hover {
     border: 1px transparent solid;
     color: white;
     background-color: red;

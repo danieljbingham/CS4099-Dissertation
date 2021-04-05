@@ -12,6 +12,8 @@ class Shortlist extends Component {
         this.state = {
             items: [],
             pages: 0,
+            originalPages: 0,
+            pageNo: 0,
             shortlist: [],
             filteredItems: [],
             filteredShortlist: [],
@@ -38,12 +40,12 @@ class Shortlist extends Component {
         });*/
 
         this.getPages();
-        this.getItems(0);
+        this.getItems();
     }
 
     render() {
 
-        const items = this.state.filteredItems;
+        const items = this.state.filteredItems.slice(this.state.pageNo*5, this.state.pageNo*5 + 5);
 
         if (!items) return null;
         const listItems = items.map((item) =>
@@ -90,6 +92,7 @@ class Shortlist extends Component {
                         onPageChange={this.handlePageClick}
                         containerClassName={'pagination'}
                         activeClassName={'active'}
+                        forcePage={this.state.pageNo}
                     />
     
                 </div>
@@ -204,8 +207,8 @@ class Shortlist extends Component {
         );
     }
 
-    async getItems(i) {
-        this.itemService.retrieveShortlist(this.props.user._links.self.href, i).then(shortlists => {
+    async getItems() {
+        this.itemService.retrieveShortlist(this.props.user._links.self.href).then(shortlists => {
             console.log(JSON.stringify(shortlists));
             this.setState({ shortlist:shortlists })
             Promise.all(shortlists.map(item => {
@@ -220,7 +223,7 @@ class Shortlist extends Component {
 
     getPages() {
         this.itemService.retrieveShortlistPages(this.props.user._links.self.href).then(pages => {
-            this.setState({ pages: pages });
+            this.setState({ pages: pages, originalPages: pages });
         }
         );
     }
@@ -351,7 +354,9 @@ class Shortlist extends Component {
         this.setState({
             filter: f,
             filteredItems: dummyFilteredItems,
-            filteredShortlist: dummyFilteredShortlist
+            filteredShortlist: dummyFilteredShortlist,
+            pageNo: 0,
+            pages: Math.ceil(dummyFilteredShortlist.length/5)
         });
     }
 
@@ -420,6 +425,10 @@ class Shortlist extends Component {
     handlePageClick = (data) => {
         let selected = data.selected;
         this.getItems(selected);
+        if (this.state.filteredItems.length > 0) {
+            this.setState({items: this.state.taggedItems.slice(selected*5,selected*5 + 5)});
+        }
+        this.setState({pageNo: selected});
     };
 
 }

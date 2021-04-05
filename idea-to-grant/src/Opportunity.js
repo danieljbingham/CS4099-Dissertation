@@ -7,8 +7,8 @@ class Opportunity extends Component {
     render() {
         //console.log("props: " + JSON.stringify(this.props));
         const title = this.props.opportunity.title;
-        const description = this.props.opportunity.description;
-        const fundingDesc = this.props.opportunity.fundingDescription;
+        const description = this.truncate(this.props.opportunity.description);
+        const fundingDesc = this.truncate(this.props.opportunity.fundingDescription);
         const fullEcon = this.props.opportunity.fullEcon;
         const dates = this.props.opportunity.dates;
         const url = this.props.opportunity.url;
@@ -27,6 +27,14 @@ class Opportunity extends Component {
                 {/*<p><a href={url} onClick={() => this.props.onClick(title, url, dates, description, fundingDesc, fullEcon, tags)}>Read more...</a></p>*/}
             </div>
         )
+    }
+
+    truncate(s) {
+        if (s.length < 180) {
+            return s;
+        } else {
+            return s.substring(0, 180).trim() + "...";
+        }
     }
 }
 

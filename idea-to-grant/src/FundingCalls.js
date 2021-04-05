@@ -15,7 +15,11 @@ class FundingCalls extends Component {
         this.urlClick = this.urlClick.bind(this);
         this.state = {
             items: [],
+            taggedItems: [],
             pages: 0,
+            originalPages: 0,
+            pageNo: 0,
+            selectValue: "placeholder",
             tags: [],
             tagPresets: [],
             showDetails: false,
@@ -43,6 +47,7 @@ class FundingCalls extends Component {
     }
 
     render() {
+
         const items = this.state.items;
         if (!items) return null;
         const listItems = items.map((item) =>
@@ -81,8 +86,8 @@ class FundingCalls extends Component {
 
                     {this.state.showTitleInput && tagTitleInput}
 
-                    <select onChange={this.chooseTagPreset} required="required">
-                        <option selected disabled hidden>Choose a saved search...</option>
+                    <select value={this.state.selectValue} onChange={this.chooseTagPreset} required="required">
+                        <option value={"placeholder"} disabled hidden>Choose a saved search...</option>
                         <option value={"[]"} >None</option>
                         {tagPresetsOptions}
                     </select>
@@ -100,6 +105,7 @@ class FundingCalls extends Component {
                         onPageChange={this.handlePageClick}
                         containerClassName={'pagination'}
                         activeClassName={'active'}
+                        forcePage={this.state.pageNo}
                     />
 
                 </div>
@@ -122,6 +128,9 @@ class FundingCalls extends Component {
                         {(this.props.user.role === "researcher") && 
                             <button type="button" onClick={this.handleSubmit}>Add to shortlist</button>
                         }
+                        {(this.props.user.role !== "researcher") && 
+                            <button type="button" id="remove" onClick={this.handleRemove}>Remove from funding calls</button>
+                        }
                     </div>
                 </div>
             )
@@ -137,7 +146,7 @@ class FundingCalls extends Component {
 
     getPages() {
         this.itemService.retrieveOpportunitiesPages().then(pages => {
-            this.setState({ pages: pages });
+            this.setState({ pages: pages, originalPages: pages });
         }
         );
     }
@@ -245,6 +254,13 @@ class FundingCalls extends Component {
 
     }
 
+    handleRemove = async (e) => {
+        e.preventDefault();
+        this.setState({showDetails: false});
+        let response = await this.itemService.removeOpportunity(this.state.selectedItem._links.self.href);
+        console.log("Remove response: " + JSON.stringify(response));
+    }
+
     urlClick(item) {
         this.setState({
             showDetails: true,
@@ -280,15 +296,20 @@ class FundingCalls extends Component {
     handlePageClick = (data) => {
         let selected = data.selected;
         this.getItems(selected);
+        if (this.state.taggedItems.length > 0) {
+            this.setState({items: this.state.taggedItems.slice(selected*5,selected*5 + 5)});
+        }
+        this.setState({pageNo: selected});
     };
 
     updateOpportunities(values) {
         if (values === "") {
             this.getItems(0);
+            this.setState({pages: this.state.originalPages, taggedItems: []});
         } else {
             var tagArr = JSON.parse(values).map(item => item.value);
             this.itemService.retrieveTaggedOpportunities(tagArr).then(opps => {
-                this.setState({ items: opps });
+                this.setState({ taggedItems: opps, items: opps.slice(0,5), pages: Math.ceil(opps.length/5) });
             }
             );
         }
@@ -296,10 +317,17 @@ class FundingCalls extends Component {
 
     onChange = (e) => {
         e.persist();
+        console.log(e);
+        console.log(e.target);
+        
         console.log("CHANGED:", e.target.value);
         this.updateOpportunities(e.target.value);
-        var tagArr = JSON.parse(e.target.value).map(item => item.value);
-        this.setState({ tags: tagArr})
+        let tagArr = [];
+        if (e.target.value.length > 0) {
+            tagArr = JSON.parse(e.target.value).map(item => item.value);
+        }
+
+        this.setState({ tags: tagArr, pageNo: 0, selectValue:"placeholder"})
     }
 
     chooseTagPreset = (e) => {
@@ -307,8 +335,13 @@ class FundingCalls extends Component {
         var parsedTags = JSON.parse(e.target.value);
         console.log("CHANGED:", parsedTags);
         this.state.tagifyRef.current.removeAllTags();
-        this.state.tagifyRef.current.addTags(parsedTags, true, true);
-        this.setState({ tags: parsedTags })
+        let dummyTagifyProps = this.state.tagifyProps;
+        dummyTagifyProps.value = parsedTags;
+        this.setState({
+            tagifyProps: dummyTagifyProps,
+            tags: parsedTags,
+            selectValue: e.target.value
+        })
     }
 }
 

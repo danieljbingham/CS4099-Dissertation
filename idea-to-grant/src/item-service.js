@@ -79,8 +79,9 @@ class ItemService {
     }
   }
 
-  async retrieveShortlist(link, i) {
-    let response = await fetch(this.config.SHORTLIST_COLLECTION_URL + "?user=" + link + "&size=5" + "&page=" + i);
+  async retrieveShortlist(link) {
+    //let response = await fetch(this.config.SHORTLIST_COLLECTION_URL + "?user=" + link + "&size=5" + "&page=" + i);
+    let response = await fetch(this.config.SHORTLIST_COLLECTION_URL + "?user=" + link);
     if (!response.ok) {
       this.handleResponseError(response);
     } else {
@@ -254,6 +255,26 @@ class ItemService {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(newitem)
+    });
+    if (!response.ok) {
+      this.handleResponseError(response);
+    } else {
+      let json = await response.json();
+      console.log(JSON.stringify(json));
+      return json;
+    }
+  }
+
+  async removeOpportunity(url) {
+    let body = {public: false}
+    let response = await fetch(url, {
+      method: 'PATCH',
+      mode: 'cors',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
     });
     if (!response.ok) {
       this.handleResponseError(response);
