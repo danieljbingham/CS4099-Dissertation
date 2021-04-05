@@ -266,7 +266,7 @@ class ItemService {
   }
 
   async removeOpportunity(url) {
-    let body = {public: false}
+    let body = {publicOpportunity: false}
     let response = await fetch(url, {
       method: 'PATCH',
       mode: 'cors',

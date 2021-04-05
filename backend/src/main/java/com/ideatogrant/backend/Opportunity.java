@@ -26,32 +26,23 @@ class Opportunity {
     private String description;
     @Column(columnDefinition = "TEXT")
     private String fundingDescription;
-    private boolean isFullEcon;
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
-    private boolean isPublic;
+    private boolean fullEcon;
+    private boolean publicOpportunity;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "TAGS") @Column(name = "TAG")
     private Set<String> tags = new HashSet<>();
 
     public Opportunity(String title, String url, String dates, String description, String fundingDescription,
-                       boolean isFullEcon, boolean isPublic, Set<String> tags) {
+                       boolean fullEcon, boolean publicOpportunity, Set<String> tags) {
         this.title = title;
         this.url = url;
         this.dates = dates;
         this.description = description;
         this.fundingDescription = fundingDescription;
-        this.isFullEcon = isFullEcon;
-        this.isPublic = isPublic;
+        this.fullEcon = fullEcon;
+        this.publicOpportunity = publicOpportunity;
         this.tags = tags;
     }
 
-    public boolean getIsPublic() {
-        return isPublic;
-    }
-
-    public void setIsPublic(boolean isPublic) {
-        this.isPublic = isPublic;
-    }
 }

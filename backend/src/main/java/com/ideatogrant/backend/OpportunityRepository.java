@@ -22,11 +22,11 @@ interface OpportunityRepository extends PagingAndSortingRepository<Opportunity, 
     Page<Opportunity> findByTitleContainingIgnoreCase(String title, Pageable pageable);
      */
 
-    @Query("SELECT DISTINCT o FROM Opportunity o JOIN o.tags t WHERE LOWER(t) IN (:tags) AND o.isPublic = true")
+    @Query("SELECT DISTINCT o FROM Opportunity o JOIN o.tags t WHERE LOWER(t) IN (:tags) AND o.publicOpportunity = true")
     List<Opportunity> getTagged(@Param("tags") List<String> tags);
 
     @RestResource(path = "getOpportunities", rel = "getOpportunities")
-    public Page<Opportunity> findByIsPublicTrue(Pageable pageable);
+    public Page<Opportunity> findByPublicOpportunityTrue(Pageable pageable);
 
     /*@Query("SELECT DISTINCT(tags) FROM Opportunity ")
     List<String> getAllTags();*/

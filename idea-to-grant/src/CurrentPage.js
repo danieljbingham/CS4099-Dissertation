@@ -128,7 +128,7 @@ class CurrentPage extends Component {
             "description": this.props.currentPageObject.description,
             "fundingDescription": this.props.currentPageObject.fundingDesc,
             "fullEcon": this.props.currentPageObject.fullEcon,
-            "public": this.props.user.role !== "researcher",
+            "publicOpportunity": this.props.user.role !== "researcher",
             "tags": this.props.currentPageObject.tags
         };
         console.log(requestBody);
