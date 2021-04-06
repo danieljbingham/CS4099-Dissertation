@@ -256,7 +256,7 @@ class FundingCalls extends Component {
 
     handleRemove = async (e) => {
         e.preventDefault();
-        this.setState({showDetails: false});
+        this.setState({showDetails: false, pageNo: 0});
         let response = await this.itemService.removeOpportunity(this.state.selectedItem._links.self.href);
         console.log("Remove response: " + JSON.stringify(response));
     }
