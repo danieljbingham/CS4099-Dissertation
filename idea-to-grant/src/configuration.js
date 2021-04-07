@@ -1,15 +1,14 @@
 // stores urls for accessing rest api
+// to use localhost instead, change the API_PATH variable
 
-class Configuration {
-  USERS_COLLECTION_URL = "https://djb28.host.cs.st-andrews.ac.uk/api/users";
-  OPPORTUNITIES_COLLECTION_URL = "https://djb28.host.cs.st-andrews.ac.uk/api/opportunities/search/getOpportunities";
-  OPPORTUNITIES_COLLECTION_URL_POST = "https://djb28.host.cs.st-andrews.ac.uk/api/opportunities";
-  APPLICATIONS_COLLECTION_URL = "https://djb28.host.cs.st-andrews.ac.uk/api/users/1/applications";
-  SHORTLIST_COLLECTION_URL = "https://djb28.host.cs.st-andrews.ac.uk/api/shortlist/search/getUserShortlist";
-  TAGS_COLLECTION_URL = "https://djb28.host.cs.st-andrews.ac.uk/api/opportunities/search/allTags";
-  TAGPRESET_COLLECTION_URL = "https://djb28.host.cs.st-andrews.ac.uk/api/tagPresets";
-  TAGGED_SEARCH_URL = "https://djb28.host.cs.st-andrews.ac.uk/api/opportunities/search/getTagged";
-  USER_SEARCH_URL = "https://djb28.host.cs.st-andrews.ac.uk/api/users/search/findUser";
-}
-
-export default Configuration;
+export const API_PATH = "https://djb28.host.cs.st-andrews.ac.uk/ideatogrant/api";
+// export const API_PATH = "http://localhost:50998/ideatogrant/api";
+export const USERS_COLLECTION_URL = API_PATH + "/users";
+export const OPPORTUNITIES_COLLECTION_URL = API_PATH + "/opportunities/search/getOpportunities";
+export const OPPORTUNITIES_COLLECTION_URL_POST = API_PATH + "/opportunities";
+export const APPLICATIONS_COLLECTION_URL = API_PATH + "/users/1/applications";
+export const SHORTLIST_COLLECTION_URL = API_PATH + "/shortlist/search/getUserShortlist";
+export const TAGS_COLLECTION_URL = API_PATH + "/opportunities/search/allTags";
+export const TAGPRESET_COLLECTION_URL = API_PATH + "/tagPresets";
+export const TAGGED_SEARCH_URL = API_PATH + "/opportunities/search/getTagged";
+export const USER_SEARCH_URL = API_PATH + "/users/search/findUser";

@@ -1,15 +1,14 @@
 // following tutorial at https://dzone.com/articles/consuming-rest-api-with-reactjs
 
-import Configuration from './configuration';
+import * as config from './configuration';
 
 class ItemService {
 
   constructor() {
-    this.config = new Configuration();
   }
 
   async retrieveUsers() {
-    let response = await fetch(this.config.USERS_COLLECTION_URL);
+    let response = await fetch(config.USERS_COLLECTION_URL);
     if (!response.ok) {
       this.handleResponseError(response);
     } else {
@@ -26,7 +25,7 @@ class ItemService {
   }
 
   async retrieveOpportunities(i) {
-    let response = await fetch(this.config.OPPORTUNITIES_COLLECTION_URL + "?size=5&page=" + i);
+    let response = await fetch(config.OPPORTUNITIES_COLLECTION_URL + "?size=5&page=" + i);
     if (!response.ok) {
       this.handleResponseError(response);
     } else {
@@ -37,7 +36,7 @@ class ItemService {
   }
 
   async retrieveOpportunitiesPages() {
-    let response = await fetch(this.config.OPPORTUNITIES_COLLECTION_URL + "?size=5");
+    let response = await fetch(config.OPPORTUNITIES_COLLECTION_URL + "?size=5");
     if (!response.ok) {
       this.handleResponseError(response);
     } else {
@@ -60,7 +59,7 @@ class ItemService {
 
   async retrieveTaggedOpportunities(tags) {
     var tagsStr = tags.join(',');
-    let response = await fetch(this.config.TAGGED_SEARCH_URL + "?tags=" + tagsStr);
+    let response = await fetch(config.TAGGED_SEARCH_URL + "?tags=" + tagsStr);
     if (!response.ok) {
       this.handleResponseError(response);
     } else {
@@ -70,7 +69,7 @@ class ItemService {
   }
 
   async retrieveApplications() {
-    let response = await fetch(this.config.APPLICATIONS_COLLECTION_URL);
+    let response = await fetch(config.APPLICATIONS_COLLECTION_URL);
     if (!response.ok) {
       this.handleResponseError(response);
     } else {
@@ -80,8 +79,8 @@ class ItemService {
   }
 
   async retrieveShortlist(link) {
-    //let response = await fetch(this.config.SHORTLIST_COLLECTION_URL + "?user=" + link + "&size=5" + "&page=" + i);
-    let response = await fetch(this.config.SHORTLIST_COLLECTION_URL + "?user=" + link);
+    //let response = await fetch(config.SHORTLIST_COLLECTION_URL + "?user=" + link + "&size=5" + "&page=" + i);
+    let response = await fetch(config.SHORTLIST_COLLECTION_URL + "?user=" + link);
     if (!response.ok) {
       this.handleResponseError(response);
     } else {
@@ -93,7 +92,7 @@ class ItemService {
   }
 
   async retrieveShortlistPages(link) {
-    let response = await fetch(this.config.SHORTLIST_COLLECTION_URL + "?user=" + link + "&size=5");
+    let response = await fetch(config.SHORTLIST_COLLECTION_URL + "?user=" + link + "&size=5");
     if (!response.ok) {
       this.handleResponseError(response);
     } else {
@@ -106,7 +105,7 @@ class ItemService {
   }
 
   async retrieveTags() {
-    let response = await fetch(this.config.TAGS_COLLECTION_URL);
+    let response = await fetch(config.TAGS_COLLECTION_URL);
     if (!response.ok) {
       this.handleResponseError(response);
     } else {
@@ -136,7 +135,7 @@ class ItemService {
   }
 
   async createItem(newitem) {
-    let response = await fetch(this.config.OPPORTUNITIES_COLLECTION_URL_POST, {
+    let response = await fetch(config.OPPORTUNITIES_COLLECTION_URL_POST, {
       method: "POST",
       mode: "cors",
       headers: {
@@ -153,7 +152,7 @@ class ItemService {
   }
 
   async createUser(newitem) {
-    let response = await fetch(this.config.USERS_COLLECTION_URL, {
+    let response = await fetch(config.USERS_COLLECTION_URL, {
       method: "POST",
       mode: "cors",
       headers: {
@@ -170,7 +169,7 @@ class ItemService {
   }
 
   async createTagPreset(newitem) {
-    let response = await fetch(this.config.TAGPRESET_COLLECTION_URL, {
+    let response = await fetch(config.TAGPRESET_COLLECTION_URL, {
       method: "POST",
       mode: "cors",
       headers: {
@@ -227,7 +226,7 @@ class ItemService {
 
   async createShortlistItem(newitem) {
     console.log(JSON.stringify(newitem));
-    let response = await fetch(this.config.SHORTLIST_COLLECTION_URL, {
+    let response = await fetch(config.SHORTLIST_COLLECTION_URL, {
       method: 'POST',
       mode: 'cors',
       headers: {
@@ -286,8 +285,8 @@ class ItemService {
   }
 
   async checkUserExists(email) {
-    console.log(this.config.USER_SEARCH_URL + "?email=" + email);
-    let response = await fetch(this.config.USER_SEARCH_URL + "?email=" + email);
+    console.log(config.USER_SEARCH_URL + "?email=" + email);
+    let response = await fetch(config.USER_SEARCH_URL + "?email=" + email);
     if (response.status === 404) {
       // no user for this email
       return null;
