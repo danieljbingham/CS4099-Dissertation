@@ -131,6 +131,7 @@ class FundingCalls extends Component {
                         {(this.props.user.role !== "researcher") && 
                             <button type="button" id="remove" onClick={this.handleRemove}>Remove from funding calls</button>
                         }
+                        <a id="share" class="secondary-btn" onClick={(e) => window.open(this.mailtoLink())} target="_blank">Share by email</a>
                     </div>
                 </div>
             )
@@ -342,6 +343,22 @@ class FundingCalls extends Component {
             tags: parsedTags,
             selectValue: e.target.value
         })
+    }
+
+    mailtoLink() {
+        let opp = this.state.selectedItem;
+        let dates = JSON.parse(opp.dates).map((date) => date.title + ": " + date.date);
+
+        let subjectStr = "Funding Opportunity: " + opp.title;
+        let bodyStr =   "I came across a funding opportunity that I thought you might like to see!%0A%0A" +
+                        opp.title + " %0A%0A" +
+                        opp.description + " %0A%0A" +
+                        opp.fundingDescription + " %0A%0A" +
+                        dates.join(" %0A") + " %0A%0A" +
+                        "Read more at " + opp.url + " %0A%0A" +
+                        "Shared from Idea to Grant browser extension";
+        console.log( "mailto:?body=" + bodyStr.replace(/ /g, '%20') + "&subject=" + subjectStr.replace(/ /g, '%20'));
+        return "mailto:?body=" + bodyStr.replace(/ /g, '%20') + "&subject=" + subjectStr.replace(/ /g, '%20');
     }
 }
 
