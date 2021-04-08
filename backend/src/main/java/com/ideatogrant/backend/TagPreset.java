@@ -6,9 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Data
@@ -28,7 +26,6 @@ class TagPreset {
     private User user;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    //@CollectionTable(name = "TAG_PRESET") @Column(name = "TAG")
     private Set<String> tags = new HashSet<>();
 
     public TagPreset(String title, User user, Set<String> tags) {

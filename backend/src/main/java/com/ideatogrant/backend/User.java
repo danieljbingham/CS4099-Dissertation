@@ -4,11 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
-import org.springframework.lang.Nullable;
 
 import java.util.List;
-import java.util.Objects;
 
 import javax.persistence.*;
 

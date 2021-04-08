@@ -16,7 +16,6 @@ class CurrentPage extends Component {
         this.handleDatesChange = this.handleDatesChange.bind(this);
         this.addDate = this.addDate.bind(this);
         this.getTags = this.getTags.bind(this);
-        this.getURL = this.getURL.bind(this);
         this.submitTab = this.submitTab.bind(this);
         this.state = {
             showDetails: false,
@@ -70,12 +69,13 @@ class CurrentPage extends Component {
                                 <input type="text" title="title" value={dateObj.title} onChange={(e) => this.handleDatesChange(index, e)} />
                                 <input type="text" className="date" placeholder="yyyy-mm-dd" value={dateObj.date} title="date"
                                 onChange={(e) => this.handleDatesChange(index, e)} onBlur={(e) => this.handleDate(index, e)} />
+                                <button id="remove" title="Remove" type="button" onClick={(e) => this.removeDate(index, e)}>-</button>
                                 </div>                               
                             )}
                             {(this.state.datesError) &&
                             <p className="error dateError">{this.state.datesError}</p>}
                         <button id="add" className="secondary-btn" onClick={this.addDate} type="button">Add another date</button>
-                        <button id="remove" className="secondary-btn" onClick={this.removeDates} type="button">Remove empty dates</button>
+                        {/*<button id="remove" className="secondary-btn" onClick={this.removeDates} type="button">Remove empty dates</button>*/}
 
                     </label>
                     <label>
@@ -109,7 +109,7 @@ class CurrentPage extends Component {
                                 placeholder: "type some tags..."
                             }}
                             {...this.state.tagifyProps}   // dynamic props such as "loading", "showDropdown:'abc'", "value"
-                            onChange={e => (e.persist(), console.log("CHANGED:", e.target.value), this.setTags(e.target.value))}
+                            onChange={e => (e.persist(), this.setTags(e.target.value))}
                         />
                     </label>
 
@@ -122,12 +122,13 @@ class CurrentPage extends Component {
     
     scanPage = () => {
         browser.tabs.query({ active: true, currentWindow: true }, tabs => {
-            const url = new URL(tabs[0].url);
+            const url = new URL(tabs[0].url).href;
             const title = tabs[0].title;
             this.props.setTitle(title);
             this.props.setUrl(url);
-            this.props.setDate("");
+            this.props.setDates([{title:"", date:""}]);
             this.props.setDescription("");
+            this.props.setFundingDesc("");
             this.props.setTags([]);
             this.state.tagifyRef.current.removeAllTags();
         });
@@ -135,7 +136,7 @@ class CurrentPage extends Component {
 
     handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("submit");
+
         if (this.formValid()) {
             let requestBody = {
                 "title": this.props.currentPageObject.title,
@@ -147,17 +148,16 @@ class CurrentPage extends Component {
                 "publicOpportunity": this.props.user.role !== "researcher",
                 "tags": this.props.currentPageObject.tags
             };
-            console.log(requestBody);
+
             let response = await this.itemService.createItem(requestBody);
-            console.log("Response: " + JSON.stringify(response));
-    
+
+            
             if (this.props.user.role === "researcher") {
                 let shortlistRequest = {
                     "user": this.props.user._links.self.href,
                     "opportunity": response._links.self.href,
                     "urls": "[]"
                 }
-                console.log("shortlistRequest: " + JSON.stringify(shortlistRequest));
                 this.itemService.createShortlistItem(shortlistRequest)
             }
     
@@ -201,7 +201,6 @@ class CurrentPage extends Component {
                 this.props.setDescription(value);
                 break;
             case "fullEcon":
-                console.log(e.target.checked);
                 this.props.setFullEcon(e.target.checked);
                 break; 
             case "fundingDesc":
@@ -274,6 +273,15 @@ class CurrentPage extends Component {
         this.props.setDates(dummyDates);
     }
 
+    removeDate = (index, e) => {
+        var dummyDates = this.props.currentPageObject.dates;
+        dummyDates.splice(index, 1);
+        if (dummyDates.length == 0) {
+            dummyDates = [{title:"", date:""}];
+        }
+        this.props.setDates(dummyDates);
+    }
+
     removeDates = () => {
         var dummyDates = this.props.currentPageObject.dates;
 
@@ -290,14 +298,12 @@ class CurrentPage extends Component {
     }
 
     setTags = (values) => {
-        var tagArr = JSON.parse(values).map(item => item.value);
-        this.props.setTags(tagArr);
-    }
-
-    getURL() {
-        //let querying = window.tabs.query({active: true, lastFocusedWindow: true})
-        //console.log(querying);
-        //return querying;
+        if (!values) {
+            this.props.setTags([]);
+        } else {
+            var tagArr = JSON.parse(values).map(item => item.value);
+            this.props.setTags(tagArr);
+        }
     }
 
     getTags() {
@@ -322,45 +328,54 @@ class CurrentPage extends Component {
 
         switch (name) {
             case "title":
-                if (!value.trim()) {
+                if (!value || !value.trim()) {
                     this.setState({titleError: "You must include a title"});
+                    return false;
                 } else if (this.state.titleError) {
                     this.setState({titleError: ""});
                 }
                 break;
             case "url":
-                if (!value.trim()) {
+                if (!value || !value.trim()) {
                     this.setState({urlError: "You must include a url"});
+                    return false;
                 } else if (this.state.urlError) {
                     this.setState({urlError: ""});
                 }
                 break;
             case "description":
-                if (!value.trim()) {
+                if (!value || !value.trim()) {
                     this.setState({descriptionError: "You must include a description"});
+                    return false;
                 } else if (this.state.descriptionError) {
                     this.setState({descriptionError: ""});
                 }
                 break;
             case "fundingDesc":
-                if (!value.trim()) {
+                if (!value || !value.trim()) {
                     this.setState({fundingDescError: "You must include a funding description"});
+                    return false;
                 } else if (this.state.fundingDescError) {
                     this.setState({fundingDescError: ""});
                 }
                 break;
             case "dates": 
-                if (value.length == 1 && !value[0].title && !value[0].date) {
+                if (value.length == 1 && (!value[0].title || !value[0].date)) {
                     this.setState({datesError: "You must include at least one date"});
-                } else if (this.state.fundingDescError) {
+                    return false;
+                } else if (this.state.datesError) {
                     this.setState({datesError: ""});
                 }
         }
 
+        return true;
+
     }
 
     formValid() {
-        this.inputValid("url", this.props.currentPageObject.url) && this.props.setUrl(this.addhttp(this.props.currentPageObject.url)); 
+        if (this.inputValid("url", this.props.currentPageObject.url)) {
+            this.props.setUrl(this.addhttp(this.props.currentPageObject.url)); 
+        }
         this.removeDates();
         return  this.inputValid("title", this.props.currentPageObject.title) &
                 this.inputValid("url", this.props.currentPageObject.url) &

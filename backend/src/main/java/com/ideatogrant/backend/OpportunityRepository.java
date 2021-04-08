@@ -9,25 +9,17 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RepositoryRestResource(collectionResourceRel = "opportunities", path = "opportunities")
 interface OpportunityRepository extends PagingAndSortingRepository<Opportunity, Long> {
 
-    /*
-    @RestResource(path = "findTitle", rel = "findTitle")
-    Page<Opportunity> findByTitleContainingIgnoreCase(String title, Pageable pageable);
-     */
-
     @Query("SELECT DISTINCT o FROM Opportunity o JOIN o.tags t WHERE LOWER(t) IN (:tags) AND o.publicOpportunity = true")
     List<Opportunity> getTagged(@Param("tags") List<String> tags);
 
     @RestResource(path = "getOpportunities", rel = "getOpportunities")
-    public Page<Opportunity> findByPublicOpportunityTrue(Pageable pageable);
+    public Page<Opportunity> findByPublicOpportunityTrueOrderByIdDesc(Pageable pageable);
 
-    /*@Query("SELECT DISTINCT(tags) FROM Opportunity ")
-    List<String> getAllTags();*/
+
 }

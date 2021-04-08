@@ -164,16 +164,17 @@
 }
 
 .currentPage #remove {
-    margin: 8px 0 18px 10px;
-    display: inline-block;
-    padding-left: 20px;
-    padding-right: 20px;
-}
-
-.currentPage #remove {
     border: 1px red solid;
+    border-radius: 50%;
+    width: 1.65em;
+    height: 20px;
+    cursor: pointer;
+    margin: 21px 0 0 4px;
+    vertical-align: top;
+    padding: 0 0 1px 0;
     background-color: white;
     color: red;
+    flex: 0 0 20px;
 }
 
 .currentPage #remove:hover {
@@ -181,7 +182,6 @@
     color: white;
     background-color: red;
 }
-
 
 .currentPage Tags {
     margin: 8px 0;

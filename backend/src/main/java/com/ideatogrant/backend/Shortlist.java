@@ -17,13 +17,11 @@ class Shortlist {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    //@ManyToOne(fetch=FetchType.LAZY)
     @ManyToOne
     @JoinColumn(name = "USER_ID", referencedColumnName = "ID")
     @JsonIgnoreProperties("shortlist")
     private User user;
 
-    //@ManyToOne(fetch=FetchType.EAGER)
     @ManyToOne
     @JoinColumn(name = "OPPORTUNITY_ID", referencedColumnName = "ID")
     private Opportunity opportunity;
