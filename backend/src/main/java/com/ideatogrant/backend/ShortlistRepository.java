@@ -7,10 +7,8 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-import java.util.List;
-
 @CrossOrigin(origins = "*", allowedHeaders = "*")
-@RepositoryRestResource(collectionResourceRel = "shortlists", path = "shortlist")
+@RepositoryRestResource(collectionResourceRel = "shortlist", path = "shortlist")
 interface ShortlistRepository extends PagingAndSortingRepository<Shortlist, Long> {
 
     @RestResource(path = "getUserShortlist", rel = "getUserShortlist")

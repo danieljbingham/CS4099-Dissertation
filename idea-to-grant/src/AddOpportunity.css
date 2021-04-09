@@ -1,64 +1,64 @@
-.currentPage {
+.addOpportunity {
     margin-top: 5%;
 }
 
-.currentPage h1 {
+.addOpportunity h1 {
     text-align: left;
     margin: 25px 5% 5px 5%;
     font-size: 1.1em;
     text-decoration: underline;
 }
 
-.currentPage p {
+.addOpportunity p {
     margin: -8px 0 12px 0;
     font-size: 11px;
 }
 
-.currentPage p.error {
+.addOpportunity p.error {
     color: red;
 }
 
-.currentPage p.dateError {
+.addOpportunity p.dateError {
     margin: 8px 0 0 0;
 }
 
-.currentPage form {
+.addOpportunity form {
     width: 90%;
     margin: 0 5% 30px 5%;
 
 }
 
-.currentPage input {
+.addOpportunity input {
     display: block;
 }
 
-.currentPage input[type="checkbox"] {
+.addOpportunity input[type="checkbox"] {
     display: inline;
     margin: 8px 0 18px 8px;
     vertical-align: -2px;
 }
 
-.currentPage__addToShortlist {
+.addOpportunity__addToShortlist {
     width: 90%;
     margin: 25px 5% 5px 5%;
 }
 
-.currentPage select {
+.addOpportunity select {
     width: 90%;
     margin: 5px 5% 5px 5%;
 }
 
-.currentPage option {
+.addOpportunity option {
     padding: 6px;
 }
 
-.currentPage progress {
+.addOpportunity progress {
     width: 90%;
     margin: 0 5%;
 
 }
 
-.currentPage input[type=text] {
+.addOpportunity input[type=text] {
     padding: 12px 20px;
     margin: 8px 0 18px 0;
     box-sizing: border-box;
@@ -69,10 +69,10 @@
     appearance: none;
 }
 
-.currentPage input[type=text]:hover {
+.addOpportunity input[type=text]:hover {
 	border-color: #ccc;
 }
-.currentPage input[type=text]:focus {
+.addOpportunity input[type=text]:focus {
 	border-color: #3595f6;
 	box-shadow: 0 0 1px 3px rgba(59, 153, 252, .7);
 	box-shadow: 0 0 0 3px -moz-mac-focusring;
@@ -80,17 +80,17 @@
 	outline: none;
 }
 
-.currentPage input[type=radio] {
+.addOpportunity input[type=radio] {
     display: inline;
 }
 
-.currentPage #submit-btn {
+.addOpportunity #submit-btn {
     margin-top: 20px;
     padding-left: 20px;
     padding-right: 20px;
 }
 
-.currentPage textarea {
+.addOpportunity textarea {
     width: 100%;
     height: 125px;
     margin: 8px 0 18px 0;
@@ -102,10 +102,10 @@
     appearance: none;
 }
 
-.currentPage textarea:hover {
+.addOpportunity textarea:hover {
 	border-color: #ccc;
 }
-.currentPage textarea:focus {
+.addOpportunity textarea:focus {
 	border-color: #3595f6;
 	box-shadow: 0 0 1px 3px rgba(59, 153, 252, .7);
 	box-shadow: 0 0 0 3px -moz-mac-focusring;
@@ -113,57 +113,57 @@
 	outline: none;
 }
 
-.currentPage #scan {
+.addOpportunity #scan {
     width: 90%;
     margin: 0 5% 5% 5%;
 }
 
-.currentPage label {
+.addOpportunity label {
     display: block;
 }
 
-.currentPage #radios { 
+.addOpportunity #radios { 
     margin: 0 0 5% 5%;
 }
 
-.currentPage #radios label { 
+.addOpportunity #radios label { 
     margin-right: 20px;
 }
 
-.currentPage #radios p { 
+.addOpportunity #radios p { 
     margin: 0;
 }
 
-.currentPage #radios input { 
+.addOpportunity #radios input { 
     margin-right: 6px;
     margin-top: -1px;
     height: 100%;
     vertical-align: middle;
 }
 
-.currentPage .dates {
+.addOpportunity .dates {
     display: flex;
     flex-direction: row;
 }
 
-.currentPage .dates input { 
+.addOpportunity .dates input { 
     margin: 8px 0 4px;
     width: 70%;
 }
 
-.currentPage .dates .date { 
+.addOpportunity .dates .date { 
     margin-left: 6px;
     width: 50%;
 }
 
-.currentPage #add {
+.addOpportunity #add {
     margin: 8px 0 18px 0;
     display: inline-block;
     padding-left: 20px;
     padding-right: 20px;
 }
 
-.currentPage #remove {
+.addOpportunity #remove {
     border: 1px red solid;
     border-radius: 50%;
     width: 1.65em;
@@ -177,12 +177,12 @@
     flex: 0 0 20px;
 }
 
-.currentPage #remove:hover {
+.addOpportunity #remove:hover {
     border: 1px transparent solid;
     color: white;
     background-color: red;
 }
 
-.currentPage Tags {
+.addOpportunity Tags {
     margin: 8px 0;
 }

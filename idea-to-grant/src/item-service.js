@@ -79,7 +79,6 @@ class ItemService {
   }
 
   async retrieveShortlist(link) {
-    //let response = await fetch(config.SHORTLIST_COLLECTION_URL + "?user=" + link + "&size=5" + "&page=" + i);
     let response = await fetch(config.SHORTLIST_COLLECTION_URL + "?user=" + link);
     if (!response.ok) {
       this.handleResponseError(response);

@@ -30,7 +30,7 @@ class FundingCalls extends Component {
             tagifyProps: {whitelist: []},
             settings: {
                 dropdown:{
-                    maxItems: 20,           // <- mixumum allowed rendered suggestions
+                    maxItems: 12,           // <- mixumum allowed rendered suggestions
                     enabled: 0,             // <- show suggestions on focus
                     closeOnSelect: false    // <- do not hide the suggestions dropdown once an item has been selected
                 },
@@ -61,16 +61,9 @@ class FundingCalls extends Component {
         );
         
         let tagTitleInput = <div id="tagTitle">
-            <input type="text" value={this.props.tagPresetTitle} onChange={this.tagPresetTitleChange} title="title" placeholder="Title of your saved search..."/>
+            <input type="text" value={this.state.tagPresetTitle} onChange={this.tagPresetTitleChange} title="title" placeholder="Title of your saved search..."/>
             <button id="saveTitle" title="Save Tag Preset" onClick={this.savePreset}>Save</button>
         </div>
-        /*const onChange = e => {
-            //e.persist();
-            console.log("CHANGED:", e.target.value);
-            this.updateOpportunities(e.target.value);
-          };
-        */
-        console.log(tagPresetsOptions);
 
         if (this.state.showDetails == false) {
             return (
@@ -164,45 +157,6 @@ class FundingCalls extends Component {
         this.setState({showTitleInput: true});
     }
 
-    handleChange = (e) => {
-        let name = e.target.title;
-        let value = e.target.value;
-        if (name != "fullEcon") {
-            e.preventDefault();
-        }
-
-        switch (name) {
-            case "title":
-                this.props.setTitle(value);
-                break;
-            case "url":
-                this.props.setUrl(value);
-                break;
-            case "date":
-                this.props.setDate(value);
-                break;
-            case "description":
-                this.props.setDescription(value);
-                break;
-            case "fullEcon":
-                console.log(e.target.checked);
-                this.props.setFullEcon(e.target.checked);
-                break; 
-            case "fundingDesc":
-                this.props.setFundingDesc(value);
-                break;
-            }
-
-        if (name === "date") {
-            this.setState({ dateChanged: true });
-        } else {
-            if (this.state.dateChanged === true) {
-                this.normaliseDate(this.props.currentPageObject.date);
-                this.setState({ dateChanged: false });
-            }
-        }
-    }
-
     tagPresetTitleChange = (e) => {
         e.preventDefault();
 
@@ -268,18 +222,6 @@ class FundingCalls extends Component {
             selectedItem: item
         });
     }
-
-    /*
-    urlClick(title, url, dates, description, fundingDesc, fullEcon, tags) {
-        this.props.setTitle(title);
-        this.props.setUrl(url);
-        this.props.setDates(dates);
-        this.props.setDescription(description);
-        this.props.setFundingDesc(fundingDesc);
-        this.props.setFullEcon(fullEcon);
-        this.props.setTags(tags);
-        this.props.changeTab(0);
-    }*/
 
     getTags() {
 

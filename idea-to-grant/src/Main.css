@@ -36,6 +36,9 @@ h1 {
   flex-grow: 1;
   flex-basis: 0;
   text-align: center;
+  align-items: center;
+  justify-content: center;
+  display: flex;
 }
 
 .react-tabs__tab:hover {

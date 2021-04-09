@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
-import './CurrentPage.css'
+import './AddOpportunity.css'
 import ItemService from './item-service'
 import Tags from "@yaireo/tagify/dist/react.tagify" // React-wrapper file
 import "@yaireo/tagify/dist/tagify.css" // Tagify CSS
 const toDate = require('normalize-date');
 
-class CurrentPage extends Component {
+class AddOpportunity extends Component {
     constructor(props) {
         super(props);
         this.itemService = new ItemService();
@@ -19,15 +19,26 @@ class CurrentPage extends Component {
         this.submitTab = this.submitTab.bind(this);
         this.state = {
             showDetails: false,
-            dateChanged: "",
-            tagifyRef: React.createRef(),
-            tagifyProps: { whitelist: [""], value: this.props.currentPageObject.tags },
+
+            title: "",
+            url: "",
+            dates: [{title:"", date:""}],
+            description: "",
+            fullEcon: false,
+            fundingDesc: "",
+            tags: [],
 
             titleError: "",
             urlError: "",
             descriptionError: "",
             fundingDescError: "",
             datesError: ""
+        }
+        this.state = {
+            ...this.state,
+            tagifyRef: React.createRef(),
+            tagifyProps: { whitelist: [""], value: this.state.tags }
+
         }
     }
 
@@ -38,33 +49,25 @@ class CurrentPage extends Component {
     render() {
 
         return (
-            <div className="currentPage">
-                {/*<p>Welcome back {this.props.user.name}</p><br />*/}
+            <div className="addOpportunity">
                 <button type="button" id="scan" onClick={this.scanPage}>Scan Page</button>
 
                 <form onSubmit={this.handleSubmit}>
                     <label>
                         Title:
-                        <input type="text" value={this.props.currentPageObject.title} title="title" onChange={this.handleChange} />
+                        <input type="text" value={this.state.title} title="title" onChange={this.handleChange} />
                         {(this.state.titleError) &&
                             <p className="error">{this.state.titleError}</p>}
                     </label>
                     <label>
                         URL:
-                        <input type="text" value={this.props.currentPageObject.url} title="url" onChange={this.handleChange} />
+                        <input type="text" value={this.state.url} title="url" onChange={this.handleChange} />
                         {(this.state.urlError) &&
                             <p className="error">{this.state.urlError}</p>}
                     </label>
-                    {/*<label>
-                        Date (YYYY-MM-DD):
-                        <input type="text" value={this.props.currentPageObject.date} title="date" onChange={this.handleChange} onBlur={this.handleDate} />
-                    </label>
-                    
-                                                    <input type="date" title="date" value={dateObj.date} onChange={(e) => this.handleDatesChange(index, e)} /> 
-*/}
                     <label>
                         Deadlines:
-                            {this.props.currentPageObject.dates.map((dateObj, index) => 
+                            {this.state.dates.map((dateObj, index) => 
                                 <div className="dates">
                                 <input type="text" title="title" value={dateObj.title} onChange={(e) => this.handleDatesChange(index, e)} />
                                 <input type="text" className="date" placeholder="yyyy-mm-dd" value={dateObj.date} title="date"
@@ -75,25 +78,23 @@ class CurrentPage extends Component {
                             {(this.state.datesError) &&
                             <p className="error dateError">{this.state.datesError}</p>}
                         <button id="add" className="secondary-btn" onClick={this.addDate} type="button">Add another date</button>
-                        {/*<button id="remove" className="secondary-btn" onClick={this.removeDates} type="button">Remove empty dates</button>*/}
-
                     </label>
                     <label>
                         Description:
-                        <textarea value={this.props.currentPageObject.description} title="description" onChange={this.handleChange} />
+                        <textarea value={this.state.description} title="description" onChange={this.handleChange} />
                         {(this.state.descriptionError) &&
                             <p className="error">{this.state.descriptionError}</p>}
                     </label>
                     <label>
                         Funding Information:
-                        <textarea value={this.props.currentPageObject.fundingDesc} title="fundingDesc" onChange={this.handleChange} />
+                        <textarea value={this.state.fundingDesc} title="fundingDesc" onChange={this.handleChange} />
                         {(this.state.fundingDescError) &&
                             <p className="error">{this.state.fundingDescError}</p>}
 
                     </label>
                     <label>
                         Full Economic Costing?
-                        <input type="checkbox" checked={this.props.currentPageObject.fullEcon} title="fullEcon" onChange={this.handleChange} />
+                        <input type="checkbox" checked={this.state.fullEcon} title="fullEcon" onChange={this.handleChange} />
                         <br />
                     </label>
                     <label>
@@ -102,7 +103,7 @@ class CurrentPage extends Component {
                             tagifyRef={this.state.tagifyRef} // optional Ref object for the Tagify instance itself, to get access to inner-methods
                             settings={{
                                 dropdown: {
-                                    maxItems: 20,           // <- mixumum allowed rendered suggestions
+                                    maxItems: 12,           // <- mixumum allowed rendered suggestions
                                     enabled: 0,             // <- show suggestions on focus
                                     closeOnSelect: false    // <- do not hide the suggestions dropdown once an item has been selected
                                 },
@@ -124,12 +125,14 @@ class CurrentPage extends Component {
         browser.tabs.query({ active: true, currentWindow: true }, tabs => {
             const url = new URL(tabs[0].url).href;
             const title = tabs[0].title;
-            this.props.setTitle(title);
-            this.props.setUrl(url);
-            this.props.setDates([{title:"", date:""}]);
-            this.props.setDescription("");
-            this.props.setFundingDesc("");
-            this.props.setTags([]);
+            this.setState({
+                title: title,
+                url: url,
+                dates: [{title:"", date:""}],
+                description: "",
+                fundingDesc: "",
+                tags: []
+            })
             this.state.tagifyRef.current.removeAllTags();
         });
     }
@@ -139,14 +142,14 @@ class CurrentPage extends Component {
 
         if (this.formValid()) {
             let requestBody = {
-                "title": this.props.currentPageObject.title,
-                "url": this.props.currentPageObject.url,
-                "dates": JSON.stringify(this.props.currentPageObject.dates),
-                "description": this.props.currentPageObject.description,
-                "fundingDescription": this.props.currentPageObject.fundingDesc,
-                "fullEcon": this.props.currentPageObject.fullEcon,
+                "title": this.state.title,
+                "url": this.state.url,
+                "dates": JSON.stringify(this.state.dates),
+                "description": this.state.description,
+                "fundingDescription": this.state.fundingDesc,
+                "fullEcon": this.state.fullEcon,
                 "publicOpportunity": this.props.user.role !== "researcher",
-                "tags": this.props.currentPageObject.tags
+                "tags": this.state.tags
             };
 
             let response = await this.itemService.createItem(requestBody);
@@ -161,13 +164,15 @@ class CurrentPage extends Component {
                 this.itemService.createShortlistItem(shortlistRequest)
             }
     
-            this.props.setTitle("");
-            this.props.setUrl("");
-            this.props.setDates([{title:"",date:""}]);
-            this.props.setDescription("");
-            this.props.setFundingDesc("");
-            this.props.setFullEcon(false);
-            this.props.setTags([]);
+            this.setState({
+                title: "",
+                url: "",
+                dates: [{title:"", date:""}],
+                description: "",
+                fundingDesc: "",
+                fullEcon: false,
+                tags: []
+            })
             this.state.tagifyRef.current.removeAllTags();
     
             if (this.props.user.role === "researcher") {
@@ -189,33 +194,22 @@ class CurrentPage extends Component {
 
         switch (name) {
             case "title":
-                this.props.setTitle(value);
+                this.setState({title: value});
                 break;
             case "url":
-                this.props.setUrl(value);
-                break;
-            case "date":
-                this.props.setDate(value);
+                this.setState({url: value});
                 break;
             case "description":
-                this.props.setDescription(value);
+                this.setState({description: value});
+                break;
+            case "fundingDesc":
+                this.setState({fundingDesc: value});
                 break;
             case "fullEcon":
-                this.props.setFullEcon(e.target.checked);
-                break; 
-            case "fundingDesc":
-                this.props.setFundingDesc(value);
-                break;
+                    this.setState({fullEcon: value});
+                    break; 
             }
 
-        if (name === "date") {
-            this.setState({ dateChanged: true });
-        } else {
-            if (this.state.dateChanged === true) {
-                this.normaliseDate(this.props.currentPageObject.date);
-                this.setState({ dateChanged: false });
-            }
-        }
     }
 
     handleDatesChange = (index, e) => {
@@ -223,7 +217,7 @@ class CurrentPage extends Component {
 
         let name = e.target.title;
         let value = e.target.value;
-        let dummyDates = this.props.currentPageObject.dates;
+        let dummyDates = this.state.dates;
 
 
         switch (name) {
@@ -235,7 +229,7 @@ class CurrentPage extends Component {
                 break;
         }
 
-        this.props.setDates(dummyDates);
+        this.setState({dates: dummyDates});
         this.inputValid("dates", dummyDates);
 
     }
@@ -254,11 +248,11 @@ class CurrentPage extends Component {
           }
           
 
-        let dummyDates = this.props.currentPageObject.dates;
+        let dummyDates = this.state.dates;
         dummyDates[index].date = normalisedDate;
 
         this.inputValid("dates", dummyDates);
-        this.props.setDates(dummyDates);
+        this.setState({dates: dummyDates});
     }
 
     normaliseDate = (value) => {
@@ -268,22 +262,22 @@ class CurrentPage extends Component {
     }
 
     addDate = () => {
-        var dummyDates = this.props.currentPageObject.dates;
+        var dummyDates = this.state.dates;
         dummyDates.push({title:"", date:""});
-        this.props.setDates(dummyDates);
+        this.setState({dates: dummyDates});
     }
 
     removeDate = (index, e) => {
-        var dummyDates = this.props.currentPageObject.dates;
+        var dummyDates = this.state.dates;
         dummyDates.splice(index, 1);
         if (dummyDates.length == 0) {
             dummyDates = [{title:"", date:""}];
         }
-        this.props.setDates(dummyDates);
+        this.setState({dates: dummyDates});
     }
 
     removeDates = () => {
-        var dummyDates = this.props.currentPageObject.dates;
+        var dummyDates = this.state.dates;
 
         for (let i = dummyDates.length - 1; i >= 0; i--) {
             if (!dummyDates[i].title || !dummyDates[i].date) { 
@@ -294,15 +288,15 @@ class CurrentPage extends Component {
         if (dummyDates.length == 0) {
             dummyDates = [{title:"", date:""}];
         }
-        this.props.setDates(dummyDates);
+        this.setState({dates: dummyDates});
     }
 
     setTags = (values) => {
         if (!values) {
-            this.props.setTags([]);
+            this.setState({tags: []});
         } else {
             var tagArr = JSON.parse(values).map(item => item.value);
-            this.props.setTags(tagArr);
+            this.setState({tags: tagArr});
         }
     }
 
@@ -373,15 +367,15 @@ class CurrentPage extends Component {
     }
 
     formValid() {
-        if (this.inputValid("url", this.props.currentPageObject.url)) {
-            this.props.setUrl(this.addhttp(this.props.currentPageObject.url)); 
+        if (this.inputValid("url", this.state.url)) {
+            this.setState({url: this.addhttp(this.state.url)}); 
         }
         this.removeDates();
-        return  this.inputValid("title", this.props.currentPageObject.title) &
-                this.inputValid("url", this.props.currentPageObject.url) &
-                this.inputValid("description", this.props.currentPageObject.description) &
-                this.inputValid("fundingDesc", this.props.currentPageObject.fundingDesc) &
-                this.inputValid("dates", this.props.currentPageObject.dates);
+        return  this.inputValid("title", this.state.title) &
+                this.inputValid("url", this.state.url) &
+                this.inputValid("description", this.state.description) &
+                this.inputValid("fundingDesc", this.state.fundingDesc) &
+                this.inputValid("dates", this.state.dates);
     }
 
     addhttp(url) {
@@ -392,4 +386,4 @@ class CurrentPage extends Component {
     }
 }
 
-export default CurrentPage
+export default AddOpportunity
