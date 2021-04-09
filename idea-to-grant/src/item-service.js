@@ -86,7 +86,7 @@ class ItemService {
       let json = await response.json();
       console.log(response);
       console.log(json);
-      return json._embedded.shortlists;
+      return json._embedded.shortlist;
     }
   }
 
