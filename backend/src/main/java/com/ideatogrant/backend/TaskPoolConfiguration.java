@@ -14,14 +14,11 @@ public class TaskPoolConfiguration implements AsyncConfigurer {
     @Override
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
-        System.out.println(threadPoolTaskExecutor.getPoolSize());
-        System.out.println(threadPoolTaskExecutor.getCorePoolSize());
-        System.out.println(threadPoolTaskExecutor.getMaxPoolSize());
-        System.out.println(threadPoolTaskExecutor.getKeepAliveSeconds());
 
         threadPoolTaskExecutor.setCorePoolSize(10);
-        threadPoolTaskExecutor.setMaxPoolSize(20);
+        threadPoolTaskExecutor.setMaxPoolSize(40);
         threadPoolTaskExecutor.setAllowCoreThreadTimeOut(true);
+        threadPoolTaskExecutor.setKeepAliveSeconds(30);
 
         return threadPoolTaskExecutor;
     }
