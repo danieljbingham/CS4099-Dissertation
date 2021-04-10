@@ -283,9 +283,19 @@ class ItemService {
     }
   }
 
-  async checkUserExists(email) {
+  async checkUserExists(email, accessToken) {
     console.log(config.USER_SEARCH_URL + "?email=" + email);
-    let response = await fetch(config.USER_SEARCH_URL + "?email=" + email);
+    console.log('Bearer ' + accessToken);
+    let response = await fetch(config.USER_SEARCH_URL + "?email=" + email, {
+      method: 'GET',
+      headers: new Headers({
+        'Authorization': 'Bearer ' + accessToken
+      })
+      /*
+      headers: {
+        "Authorization": "Bearer " + accessToken
+      },*/
+    });
     if (response.status === 404) {
       // no user for this email
       return null;

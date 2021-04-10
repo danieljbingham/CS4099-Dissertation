@@ -17,7 +17,8 @@ class App extends Component {
     this.state = {
       status: "login",
       user: {},
-      role: "researcher"
+      role: "researcher",
+      accessToken: ""
     }
   }
 
@@ -77,6 +78,7 @@ class App extends Component {
   getUserInfo(accessToken) {
     const requestURL = "https://www.googleapis.com/oauth2/v1/userinfo?alt=json";
     const requestHeaders = new Headers();
+    this.setState({accessToken: accessToken});
     requestHeaders.append('Authorization', 'Bearer ' + accessToken);
     const driveRequest = new Request(requestURL, {
       method: "GET",
@@ -94,7 +96,7 @@ class App extends Component {
 
   async notifyUser(authUser) {
     console.log(authUser);
-    let newUser = await this.itemService.checkUserExists(authUser.email);
+    let newUser = await this.itemService.checkUserExists(authUser.email, this.state.accessToken);
     if (newUser == null) {
       this.setState({ status: "register", user: authUser });
     } else {
