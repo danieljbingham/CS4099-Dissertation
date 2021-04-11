@@ -1,21 +1,28 @@
 .fundingCalls Tags {
     margin: 15px 0 15px 15px;
+    width: 100%;
 }
 
-#save {
+.fundingCalls #save {
     border: 0;
     border-radius: 50%;
     width: 1.65em;
     height: 1.65em;
     cursor: pointer;
-    margin: 22px 0 0 12px;
+    margin: 22px 15px 0 24px;
     vertical-align: top;
-    padding: 0 0 1px 0;
+    padding: 0 4px 1px 4px;
+    
+}
+
+.fundingCalls #tagRow {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
 }
 
 .fundingCalls .tags-input {
-    display: inline-block;
-    width: 88%;
+    width: 100%;
 }
 
 .fundingCalls .tags {
@@ -49,7 +56,6 @@
 }
 .fundingCalls select:focus {
 	border-color: #3595f6;
-	box-shadow: 0 0 1px 3px rgba(59, 153, 252, .7);
 	box-shadow: 0 0 0 3px -moz-mac-focusring;
 	color: #222;
 	outline: none;
@@ -67,11 +73,18 @@
     padding: 8px;
     appearance: none;
     border: 1px solid #ddd;
-    width: 82%;
+    width: 100%;
 }
 
 .fundingCalls #tagTitle #saveTitle {
     margin-left: 12px;
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+.fundingCalls #tagTitleInput {
+    display: flex;
+    flex-direction: row;
 }
 
 .fundingCalls .detail {
@@ -85,23 +98,23 @@
 
 .fundingCalls .detail button {
     padding: 6px 20px;
-    margin: 12px 0;
+    margin: 12px 12px 12px 0;
 }
 
-.fundingCalls #remove {
+.fundingCalls .remove {
     border: 1px red solid;
     background-color: white;
     color: red;
 }
 
-.fundingCalls #remove:hover {
+.fundingCalls .remove:hover {
     border: 1px transparent solid;
     color: white;
     background-color: red;
 }
 
 .fundingCalls #share {
-    margin-left: 12px;
+    white-space: nowrap;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -110,4 +123,20 @@
     border-radius: 20px;
     text-decoration: none;
     cursor: pointer;
+}
+
+.fundingCalls p.error {
+    color: red;
+    font-size: 11px;
+}
+
+.fundingCalls #tagTitleErrors {
+    margin-top: 10px;
+}
+
+.fundingCalls input[type=text]:focus {
+	border-color: #3595f6;
+	box-shadow: 0 0 0 3px -moz-mac-focusring;
+	color: #222;
+	outline: none;
 }

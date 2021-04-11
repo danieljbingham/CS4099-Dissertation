@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import ItemService from './item-service'
 import Opportunity from './Opportunity';
-import Tags from "@yaireo/tagify/dist/react.tagify" // React-wrapper file
+import Tags from "@yaireo/tagify/dist/react.tagify"
 import ReactPaginate from 'react-paginate';
 import "@yaireo/tagify/dist/tagify.css" // Tagify CSS
 import './FundingCalls.css'
@@ -21,9 +21,10 @@ class FundingCalls extends Component {
             pageNo: 0,
             selectValue: "placeholder",
             tags: [],
-            tagPresets: [],
+            tagPresets: this.props.tagPresets,
             showDetails: false,
             selectedItem: {},
+            confirmDeletion: false,
             showTitleInput: false,
             tagPresetTitle: "",
             settings: {
@@ -33,7 +34,10 @@ class FundingCalls extends Component {
                     closeOnSelect: false    // <- do not hide the suggestions dropdown once an item has been selected
                 },
                 placeholder:"Type some tags..."
-            }
+            },
+
+            titleError: "",
+            tagsError: ""
         }
         this.state = {
             ...this.state,
@@ -46,7 +50,7 @@ class FundingCalls extends Component {
         //this.getPages();
         this.getItems(0);
         //this.getTags();
-        this.getTagPresets();
+        //this.getTagPresets();
     }
 
     componentDidUpdate(prevProps) {
@@ -61,6 +65,12 @@ class FundingCalls extends Component {
             dummyTagifyProps.whitelist = this.props.tags;
             this.setState({
                 tagifyProps: dummyTagifyProps
+            })
+        }    
+
+        if (this.props.tagPresets !== prevProps.tagPresets) {
+            this.setState({
+                tagPresets: this.props.tagPresets
             })
         }    
     }
@@ -80,21 +90,29 @@ class FundingCalls extends Component {
         );
         
         let tagTitleInput = <div id="tagTitle">
-            <input type="text" value={this.state.tagPresetTitle} onChange={this.tagPresetTitleChange} title="title" placeholder="Title of your saved search..."/>
-            <button id="saveTitle" title="Save Tag Preset" onClick={this.savePreset}>Save</button>
+            <div id="tagTitleInput">
+                <input type="text" value={this.state.tagPresetTitle} onChange={this.tagPresetTitleChange} title="title" placeholder="Title of your saved search..."/>
+                <button id="saveTitle" title="Save Tag Preset" onClick={this.savePreset}>Save</button>
+            </div>
+            <div id="tagTitleErrors">
+                {this.state.titleError && <p className="error">{this.state.titleError}</p>}
+                {this.state.tagsError && <p className="error">{this.state.tagsError}</p>}
+            </div>
         </div>
 
         if (this.state.showDetails == false) {
             return (
                 <div className="fundingCalls">
 
-                    <Tags
-                        tagifyRef={this.state.tagifyRef} // optional Ref object for the Tagify instance itself, to get access to inner-methods
-                        settings={this.state.settings}
-                        {...this.state.tagifyProps}   // dynamic props such as "loading", "showDropdown:'abc'", "value"
-                        onChange={this.onChange}
-                    />
-                    <button id="save" title="Save Tag Preset" onClick={this.showPresetTitleInput}>+</button>
+                    <div id="tagRow">
+                        <Tags
+                            tagifyRef={this.state.tagifyRef} // optional Ref object for the Tagify instance itself, to get access to inner-methods
+                            settings={this.state.settings}
+                            {...this.state.tagifyProps}   // dynamic props such as "loading", "showDropdown:'abc'", "value"
+                            onChange={this.onChange}
+                        />
+                        <button id="save" title="Save Tag Preset" onClick={this.showPresetTitleInput}>+</button>
+                    </div>
 
                     {this.state.showTitleInput && tagTitleInput}
 
@@ -141,9 +159,16 @@ class FundingCalls extends Component {
                             <button type="button" onClick={this.handleSubmit}>Add to shortlist</button>
                         }
                         {(this.props.user.role !== "researcher") && 
-                            <button type="button" id="remove" onClick={this.handleRemove}>Remove from funding calls</button>
+                            <button type="button" className="remove" onClick={this.confirmDeletion}>Remove from funding calls</button>
                         }
                         <a id="share" class="secondary-btn" onClick={(e) => window.open(this.mailtoLink())} target="_blank">Share by email</a>
+                        <br />
+                        {(this.props.user.role !== "researcher") && (this.state.confirmDeletion) &&
+                            <button type="button" className="remove" onClick={this.handleRemove}>Confirm deletion</button>
+                        }                        
+                        {(this.props.user.role !== "researcher") && (this.state.confirmDeletion) &&
+                        <button type="button" class="secondary-btn" onClick={this.cancelConfirmDeletion}>Cancel</button>
+                        }
                     </div>
                 </div>
             )
@@ -180,6 +205,7 @@ class FundingCalls extends Component {
         e.preventDefault();
 
         let value = e.target.value;
+        this.inputValid("title", value);
         this.setState({ tagPresetTitle: value});
     }
 
@@ -187,15 +213,19 @@ class FundingCalls extends Component {
         e.preventDefault();
         console.log("submit");
         
-        let requestBody = {
-            "title": this.state.tagPresetTitle,
-            "user": this.props.user._links.self.href,
-            "tags": this.state.tags
-        };
-        console.log(requestBody);
-        let response = await this.itemService.createTagPreset(requestBody);
-        console.log("Response: " + JSON.stringify(response));
-        this.setState({tagPresets: [...this.state.tagPresets, response], showTitleInput: false, tagPresetTitle: ""});
+        if (this.savePresetValid()) {
+            let requestBody = {
+                "title": this.state.tagPresetTitle,
+                "user": this.props.user._links.self.href,
+                "tags": this.state.tags
+            };
+            console.log(requestBody);
+            let response = await this.itemService.createTagPreset(requestBody);
+            console.log("Response: " + JSON.stringify(response));
+            this.props.addTagPreset(response);
+            //this.setState({tagPresets: [...this.state.tagPresets, response], showTitleInput: false, tagPresetTitle: ""});
+            this.setState({showTitleInput: false, tagPresetTitle: ""});
+        }
     }
 
     onSelect(itemLink) {
@@ -211,7 +241,7 @@ class FundingCalls extends Component {
 
     backToOpportunities = async (e) => {
         e.preventDefault();
-        this.setState({showDetails: false});
+        this.setState({showDetails: false, confirmDeletion: false});
     }
 
     handleSubmit = async (e) => {
@@ -229,7 +259,8 @@ class FundingCalls extends Component {
     }
 
     handleRemove = async (e) => {
-        e.preventDefault();
+        e.preventDefault();      
+
         this.setState({showDetails: false, pageNo: 0});
         let response = await this.itemService.removeOpportunity(this.state.selectedItem._links.self.href);
         console.log("Remove response: " + JSON.stringify(response));
@@ -289,6 +320,7 @@ class FundingCalls extends Component {
             tagArr = JSON.parse(e.target.value).map(item => item.value);
         }
 
+        this.inputValid("tags", tagArr);
         this.setState({ tags: tagArr, pageNo: 0, selectValue:"placeholder"})
     }
 
@@ -320,6 +352,43 @@ class FundingCalls extends Component {
                         "Shared from Idea to Grant browser extension";
         console.log( "mailto:?body=" + bodyStr.replace(/ /g, '%20') + "&subject=" + subjectStr.replace(/ /g, '%20'));
         return "mailto:?body=" + bodyStr.replace(/ /g, '%20') + "&subject=" + subjectStr.replace(/ /g, '%20');
+    }
+
+    savePresetValid() {
+        return  this.inputValid("title", this.state.tagPresetTitle) &
+        this.inputValid("tags", this.state.tags)
+    }
+
+    inputValid(name, value) {
+        switch (name) {
+            case "title":
+                if (!value || !value.trim()) {
+                    this.setState({titleError: "You must include a title"});
+                    return false;
+                } else if (this.state.titleError) {
+                    this.setState({titleError: ""});
+                }
+                break;
+            case "tags":
+                if (value.length < 1) {
+                    this.setState({tagsError: "You must include tags to save a preset"});
+                    return false;
+                } else if (this.state.tagsError) {
+                    this.setState({tagsError: ""});
+                }
+                break;
+        }
+
+        return true;
+
+    }
+
+    cancelConfirmDeletion = (e) => { 
+        this.setState({confirmDeletion: false});
+    }
+
+    confirmDeletion = (e) => { 
+        this.setState({confirmDeletion: true});
     }
 }
 

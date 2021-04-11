@@ -131,7 +131,6 @@ class Shortlist extends Component {
                 Set status:
                 <br />
                 <select value={this.state.status} onChange={this.handleDropdownChange} required="required">
-                {/*<option selected disabled hidden>Set status...</option>*/}
                 <option value="shortlisted">Shortlisted opportunity</option>
                 <option value="applying">Working on application</option>
                 <option value="submitted">Application submitted</option>
