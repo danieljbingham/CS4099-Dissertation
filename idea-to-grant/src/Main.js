@@ -6,15 +6,35 @@ import './Main.css';
 import AddOpportunity from './AddOpportunity';
 import FundingCalls from './FundingCalls';
 import Shortlist from './Shortlist';
-{/*import Navigation from './Navigation';*/ }
+import ItemService from './item-service'
 
 class Main extends Component {
   constructor(props) {
     super(props);
+    this.itemService = new ItemService(this.props.accessToken);
     this.setTabIndex = this.setTabIndex.bind(this);
+    this.recacheOppPages = this.recacheOppPages.bind(this);
+    this.recacheShortlistPages = this.recacheShortlistPages.bind(this);
     this.state = {
       tabIndex: 0,
+      tags: []
     }
+  }
+
+  componentDidMount() {
+    // setup caching
+
+    // cache tags
+    this.getTags();
+
+    // cache funding opps page numbers
+    this.getOppPages();
+
+    // cache opps pg 1
+    // cache tag preset
+
+    // cache shortlist
+    this.getShortlistPages();
   }
 
   render() {
@@ -33,14 +53,17 @@ class Main extends Component {
           </TabList>
 
           <TabPanel>
-            <AddOpportunity changeTab={index => this.setTabIndex(index)} user={this.props.user}/>
+            <AddOpportunity changeTab={index => this.setTabIndex(index)} user={this.props.user} accessToken={this.props.accessToken}
+            tags={this.state.tags} recacheOppPages={this.recacheOppPages} recacheShortlistPages={this.recacheShortlistPages}/>
           </TabPanel>
           <TabPanel>
-            <FundingCalls changeTab={index => this.setTabIndex(index)} user={this.props.user}/>
+            <FundingCalls changeTab={index => this.setTabIndex(index)} user={this.props.user} accessToken={this.props.accessToken}
+            tags={this.state.tags} pages={this.state.oppPages}/>
           </TabPanel>
           {(this.props.user.role === "researcher") && 
             <TabPanel>
-              <Shortlist changeTab={index => this.setTabIndex(index)} user={this.props.user}/>
+              <Shortlist changeTab={index => this.setTabIndex(index)} user={this.props.user} accessToken={this.props.accessToken}
+              pages={this.state.shortlistPages}/>
             </TabPanel>
           }
 
@@ -55,49 +78,36 @@ class Main extends Component {
     this.setState({tabIndex: index});
   }
 
-  setAddOpportunityTitle(title) {
-    var addOpportunityObject = this.state.addOpportunityObject;
-    addOpportunityObject.title = title;
-    this.setState({addOpportunityObject: addOpportunityObject});
-  }
-
-  setAddOpportunityUrl(url) {
-    var addOpportunityObject = this.state.addOpportunityObject;
-    addOpportunityObject.url = url;
-    this.setState({addOpportunityObject: addOpportunityObject});
-  }
-
-  setAddOpportunityDates(dates) {
-    var addOpportunityObject = this.state.addOpportunityObject;
-    if (typeof dates === 'string') {
-      dates = JSON.parse(dates);
+  getTags() {
+    this.itemService.retrieveTags().then(tags => {
+        this.setState({
+            tags: tags
+        })
+        console.log(tags);
     }
-    addOpportunityObject.dates = dates;
-    this.setState({addOpportunityObject: addOpportunityObject});
+    );
   }
 
-  setAddOpportunityDescription(description) {
-    var addOpportunityObject = this.state.addOpportunityObject;
-    addOpportunityObject.description = description;
-    this.setState({addOpportunityObject: addOpportunityObject});
+  getOppPages() {
+    this.itemService.retrieveOpportunitiesPages().then(pages => {
+        this.setState({ oppPages: pages, });
+    }
+    );
   }
 
-  setAddOpportunityFullEcon(fullEcon) {
-    var addOpportunityObject = this.state.addOpportunityObject;
-    addOpportunityObject.fullEcon = fullEcon;
-    this.setState({addOpportunityObject: addOpportunityObject});
+  getShortlistPages() {
+    this.itemService.retrieveShortlistPages(this.props.user._links.self.href).then(pages => {
+        this.setState({ shortlistPages: pages});
+    }
+    );
   }
 
-  setAddOpportunityFundingDesc(fundingDesc) {
-    var addOpportunityObject = this.state.addOpportunityObject;
-    addOpportunityObject.fundingDesc = fundingDesc;
-    this.setState({addOpportunityObject: addOpportunityObject});
+  recacheOppPages() {
+    this.getOppPages();
   }
 
-  setAddOpportunityTags(tags) {
-    var addOpportunityObject = this.state.addOpportunityObject;
-    addOpportunityObject.tags = tags;
-    this.setState({addOpportunityObject: addOpportunityObject});
+  recacheShortlistPages() {
+    this.getShortlistPages();
   }
 }
 

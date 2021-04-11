@@ -8,7 +8,7 @@ const toDate = require('normalize-date');
 class AddOpportunity extends Component {
     constructor(props) {
         super(props);
-        this.itemService = new ItemService();
+        this.itemService = new ItemService(this.props.accessToken);
         this.scanPage = this.scanPage.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -37,17 +37,23 @@ class AddOpportunity extends Component {
         this.state = {
             ...this.state,
             tagifyRef: React.createRef(),
-            tagifyProps: { whitelist: [""], value: this.state.tags }
-
+            tagifyProps: { whitelist: this.props.tags, value: this.state.tags }
         }
     }
 
-    componentDidMount() {
-        this.getTags();
-    }
+    componentDidUpdate(prevProps) {
+        if (this.props.tags !== prevProps.tags) {
+            let dummyTagifyProps = this.state.tagifyProps;
+            dummyTagifyProps.whitelist = this.props.tags;
+            this.setState({
+                tagifyProps: dummyTagifyProps
+            })
+        }
+      }
+      
 
     render() {
-
+        
         return (
             <div className="addOpportunity">
                 <button type="button" id="scan" onClick={this.scanPage}>Scan Page</button>
@@ -107,7 +113,7 @@ class AddOpportunity extends Component {
                                     enabled: 0,             // <- show suggestions on focus
                                     closeOnSelect: false    // <- do not hide the suggestions dropdown once an item has been selected
                                 },
-                                placeholder: "type some tags..."
+                                placeholder: "Type some tags..."
                             }}
                             {...this.state.tagifyProps}   // dynamic props such as "loading", "showDropdown:'abc'", "value"
                             onChange={e => (e.persist(), this.setTags(e.target.value))}
@@ -159,7 +165,8 @@ class AddOpportunity extends Component {
                 let shortlistRequest = {
                     "user": this.props.user._links.self.href,
                     "opportunity": response._links.self.href,
-                    "urls": "[]"
+                    "urls": "[]",
+                    "status": "shortlisted"
                 }
                 this.itemService.createShortlistItem(shortlistRequest)
             }
@@ -176,8 +183,10 @@ class AddOpportunity extends Component {
             this.state.tagifyRef.current.removeAllTags();
     
             if (this.props.user.role === "researcher") {
+                this.props.recacheShortlistPages();
                 this.submitTab(2);
             } else {
+                this.props.recacheOppPages();
                 this.submitTab(1);
             }
         }
@@ -206,8 +215,8 @@ class AddOpportunity extends Component {
                 this.setState({fundingDesc: value});
                 break;
             case "fullEcon":
-                    this.setState({fullEcon: value});
-                    break; 
+                this.setState({fullEcon: value});
+                break; 
             }
 
     }
@@ -301,7 +310,6 @@ class AddOpportunity extends Component {
     }
 
     getTags() {
-
         this.itemService.retrieveTags().then(tags => {
             var dummyTagifyProps = this.state.tagifyProps;
             dummyTagifyProps.whitelist = tags;
@@ -310,7 +318,6 @@ class AddOpportunity extends Component {
             })
         }
         );
-
     }
 
     submitTab(i) {

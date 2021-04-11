@@ -1,4 +1,4 @@
-import React, { Component, useRef, useState } from 'react'
+import React, { Component } from 'react'
 import ItemService from './item-service'
 import Opportunity from './Opportunity';
 import Tags from "@yaireo/tagify/dist/react.tagify" // React-wrapper file
@@ -11,13 +11,13 @@ class FundingCalls extends Component {
 
     constructor(props) {
         super(props);
-        this.itemService = new ItemService();
+        this.itemService = new ItemService(this.props.accessToken);
         this.urlClick = this.urlClick.bind(this);
         this.state = {
             items: [],
             taggedItems: [],
-            pages: 0,
-            originalPages: 0,
+            pages: this.props.pages,
+            originalPages: this.props.pages,
             pageNo: 0,
             selectValue: "placeholder",
             tags: [],
@@ -26,8 +26,6 @@ class FundingCalls extends Component {
             selectedItem: {},
             showTitleInput: false,
             tagPresetTitle: "",
-            tagifyRef: React.createRef(),
-            tagifyProps: {whitelist: []},
             settings: {
                 dropdown:{
                     maxItems: 12,           // <- mixumum allowed rendered suggestions
@@ -37,13 +35,34 @@ class FundingCalls extends Component {
                 placeholder:"Type some tags..."
             }
         }
+        this.state = {
+            ...this.state,
+            tagifyRef: React.createRef(),
+            tagifyProps: { whitelist: this.props.tags, value: this.state.tags }
+        }
     }
 
     componentDidMount() {
-        this.getPages();
+        //this.getPages();
         this.getItems(0);
-        this.getTags();
+        //this.getTags();
         this.getTagPresets();
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.pages !== prevProps.pages) {
+            this.setState({
+                originalPages: this.props.pages
+            })
+        }
+
+        if (this.props.tags !== prevProps.tags) {
+            let dummyTagifyProps = this.state.tagifyProps;
+            dummyTagifyProps.whitelist = this.props.tags;
+            this.setState({
+                tagifyProps: dummyTagifyProps
+            })
+        }    
     }
 
     render() {

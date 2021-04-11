@@ -4,11 +4,18 @@ import * as config from './configuration';
 
 class ItemService {
 
-  constructor() {
+  constructor(accessToken) {
+    this.accessToken = accessToken;
+    console.log(this.accessToken);
+    console.log(accessToken);
   }
 
   async retrieveUsers() {
-    let response = await fetch(config.USERS_COLLECTION_URL);
+    let response = await fetch(config.USERS_COLLECTION_URL, {
+      headers: new Headers({
+        'Authorization': 'Bearer ' + this.accessToken
+      })
+    });
     if (!response.ok) {
       this.handleResponseError(response);
     } else {
@@ -25,7 +32,11 @@ class ItemService {
   }
 
   async retrieveOpportunities(i) {
-    let response = await fetch(config.OPPORTUNITIES_COLLECTION_URL + "?size=5&page=" + i);
+    let response = await fetch(config.OPPORTUNITIES_COLLECTION_URL + "?size=5&page=" + i, {
+      headers: new Headers({
+        'Authorization': 'Bearer ' + this.accessToken
+      })
+    });
     if (!response.ok) {
       this.handleResponseError(response);
     } else {
@@ -36,7 +47,11 @@ class ItemService {
   }
 
   async retrieveOpportunitiesPages() {
-    let response = await fetch(config.OPPORTUNITIES_COLLECTION_URL + "?size=5");
+    let response = await fetch(config.OPPORTUNITIES_COLLECTION_URL + "?size=5", {
+      headers: new Headers({
+        'Authorization': 'Bearer ' + this.accessToken
+      })
+    });
     if (!response.ok) {
       this.handleResponseError(response);
     } else {
@@ -48,7 +63,11 @@ class ItemService {
   }
 
   async retrieveTagPresets(url) {
-    let response = await fetch(url);
+    let response = await fetch(url, {
+      headers: new Headers({
+        'Authorization': 'Bearer ' + this.accessToken
+      })
+    });
     if (!response.ok) {
       this.handleResponseError(response);
     } else {
@@ -59,7 +78,11 @@ class ItemService {
 
   async retrieveTaggedOpportunities(tags) {
     var tagsStr = tags.join(',');
-    let response = await fetch(config.TAGGED_SEARCH_URL + "?tags=" + tagsStr);
+    let response = await fetch(config.TAGGED_SEARCH_URL + "?tags=" + tagsStr, {
+      headers: new Headers({
+        'Authorization': 'Bearer ' + this.accessToken
+      })
+    });
     if (!response.ok) {
       this.handleResponseError(response);
     } else {
@@ -68,18 +91,12 @@ class ItemService {
     }
   }
 
-  async retrieveApplications() {
-    let response = await fetch(config.APPLICATIONS_COLLECTION_URL);
-    if (!response.ok) {
-      this.handleResponseError(response);
-    } else {
-      let json = await response.json();
-      return json._embedded.applications;
-    }
-  }
-
   async retrieveShortlist(link) {
-    let response = await fetch(config.SHORTLIST_COLLECTION_URL + "?user=" + link);
+    let response = await fetch(config.SHORTLIST_COLLECTION_URL + "?user=" + link, {
+      headers: new Headers({
+        'Authorization': 'Bearer ' + this.accessToken
+      })
+    });
     if (!response.ok) {
       this.handleResponseError(response);
     } else {
@@ -91,7 +108,11 @@ class ItemService {
   }
 
   async retrieveShortlistPages(link) {
-    let response = await fetch(config.SHORTLIST_COLLECTION_URL + "?user=" + link + "&size=5");
+    let response = await fetch(config.SHORTLIST_COLLECTION_URL + "?user=" + link + "&size=5", {
+      headers: new Headers({
+        'Authorization': 'Bearer ' + this.accessToken
+      })
+    });
     if (!response.ok) {
       this.handleResponseError(response);
     } else {
@@ -104,7 +125,12 @@ class ItemService {
   }
 
   async retrieveTags() {
-    let response = await fetch(config.TAGS_COLLECTION_URL);
+    let response = await fetch(config.TAGS_COLLECTION_URL, {
+      method: 'GET',
+      headers: new Headers({
+        'Authorization': 'Bearer ' + this.accessToken
+      })
+    });
     if (!response.ok) {
       this.handleResponseError(response);
     } else {
@@ -116,7 +142,11 @@ class ItemService {
   async getItem(itemLink) {
     console.log("ItemService.getItem():");
     console.log("Item: " + itemLink);
-    return fetch(itemLink)
+    return fetch(itemLink, {
+      headers: new Headers({
+        'Authorization': 'Bearer ' + this.accessToken
+      })
+    })
       .then(response => {
         if (!response.ok) {
           this.handleResponseError(response);
@@ -137,9 +167,10 @@ class ItemService {
     let response = await fetch(config.OPPORTUNITIES_COLLECTION_URL_POST, {
       method: "POST",
       mode: "cors",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: new Headers({
+        "Content-Type": "application/json",
+        'Authorization': 'Bearer ' + this.accessToken
+      }),
       body: JSON.stringify(newitem)
     });
     if (!response.ok) {
@@ -154,9 +185,10 @@ class ItemService {
     let response = await fetch(config.USERS_COLLECTION_URL, {
       method: "POST",
       mode: "cors",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: new Headers({
+        "Content-Type": "application/json",
+        'Authorization': 'Bearer ' + this.accessToken
+      }),
       body: JSON.stringify(newitem)
     });
     if (!response.ok) {
@@ -171,9 +203,10 @@ class ItemService {
     let response = await fetch(config.TAGPRESET_COLLECTION_URL, {
       method: "POST",
       mode: "cors",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: new Headers({
+        "Content-Type": "application/json",
+        'Authorization': 'Bearer ' + this.accessToken
+      }),
       body: JSON.stringify(newitem)
     });
     if (!response.ok) {
@@ -184,54 +217,16 @@ class ItemService {
     }
   }
 
-  async deleteItem(itemlink) {
-    console.log("ItemService.deleteItem():");
-    console.log("item: " + itemlink);
-    return fetch(itemlink, {
-      method: "DELETE",
-      mode: "cors"
-    })
-      .then(response => {
-        if (!response.ok) {
-          this.handleResponseError(response);
-        }
-      })
-      .catch(error => {
-        this.handleError(error);
-      });
-  }
-
-  async updateItem(item) {
-    console.log("ItemService.updateItem():");
-    console.log(item);
-    return fetch(item.link, {
-      method: "PUT",
-      mode: "cors",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(item)
-    })
-      .then(response => {
-        if (!response.ok) {
-          this.handleResponseError(response);
-        }
-        return response.json();
-      })
-      .catch(error => {
-        this.handleError(error);
-      });
-  }
-
   async createShortlistItem(newitem) {
     console.log(JSON.stringify(newitem));
-    let response = await fetch(config.SHORTLIST_COLLECTION_URL, {
+    let response = await fetch(config.SHORTLIST_COLLECTION_URL_POST, {
       method: 'POST',
       mode: 'cors',
-      headers: {
+      headers: new Headers({
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + this.accessToken
+      }),
       body: JSON.stringify(newitem)
     });
     if (!response.ok) {
@@ -248,10 +243,11 @@ class ItemService {
     let response = await fetch(url, {
       method: 'PATCH',
       mode: 'cors',
-      headers: {
+      headers: new Headers({
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + this.accessToken
+      }),
       body: JSON.stringify(newitem)
     });
     if (!response.ok) {
@@ -268,10 +264,11 @@ class ItemService {
     let response = await fetch(url, {
       method: 'PATCH',
       mode: 'cors',
-      headers: {
+      headers: new Headers({
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + this.accessToken
+      }),
       body: JSON.stringify(body)
     });
     if (!response.ok) {
@@ -283,18 +280,14 @@ class ItemService {
     }
   }
 
-  async checkUserExists(email, accessToken) {
+  async checkUserExists(email) {
     console.log(config.USER_SEARCH_URL + "?email=" + email);
-    console.log('Bearer ' + accessToken);
+    console.log('Bearer ' + this.accessToken);
     let response = await fetch(config.USER_SEARCH_URL + "?email=" + email, {
       method: 'GET',
       headers: new Headers({
-        'Authorization': 'Bearer ' + accessToken
+        'Authorization': 'Bearer ' + this.accessToken
       })
-      /*
-      headers: {
-        "Authorization": "Bearer " + accessToken
-      },*/
     });
     if (response.status === 404) {
       // no user for this email

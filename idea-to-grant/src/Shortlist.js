@@ -7,12 +7,12 @@ import './Shortlist.css'
 class Shortlist extends Component {
     constructor(props) {
         super(props);
-        this.itemService = new ItemService();
+        this.itemService = new ItemService(this.props.accessToken);
         this.urlClick = this.urlClick.bind(this)
         this.state = {
             items: [],
-            pages: 0,
-            originalPages: 0,
+            pages: this.props.pages,
+            originalPages: this.props.pages,
             pageNo: 0,
             shortlist: [],
             filteredItems: [],
@@ -39,14 +39,23 @@ class Shortlist extends Component {
             console.log("cdm done boi " + this.state.opportunities)
         });*/
 
-        this.getPages();
+        //this.getPages();
         this.getItems();
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.pages !== prevProps.pages) {
+            this.setState({
+                originalPages: this.props.pages
+            })
+        }
     }
 
     render() {
 
         const items = this.state.filteredItems.slice(this.state.pageNo*5, this.state.pageNo*5 + 5);
-
+        console.log(this.state.filteredItems);
+        console.log(items);
         if (!items) return null;
         const listItems = items.map((item) =>
             <Opportunity opportunity={item} onClick={this.urlClick} />
@@ -199,21 +208,15 @@ class Shortlist extends Component {
         return "mailto:?body=" + bodyStr.replace(/ /g, '%20') + "&subject=" + subjectStr.replace(/ /g, '%20');
     }
 
-    async getItem(itemLink) {
-        console.log(itemLink);
-        this.itemService.getItem(itemLink).then(item => {
-            return item;
-        }
-        );
-    }
-
     async getItems() {
         this.itemService.retrieveShortlist(this.props.user._links.self.href).then(shortlists => {
             console.log(JSON.stringify(shortlists));
             this.setState({ shortlist:shortlists })
             Promise.all(shortlists.map(item => {
+                console.log(item);
                 return this.itemService.getItem(item._links.opportunity.href);
             })).then(opps => {
+                console.log(opps);
                 this.setState({ items:opps });
                 this.filterItems(this.state.filter);
             })

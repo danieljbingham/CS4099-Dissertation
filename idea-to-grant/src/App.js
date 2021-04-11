@@ -53,7 +53,8 @@ class App extends Component {
         </form>
       </div>;
     } else {
-      renderLoginOrMain = <Main user={this.state.user}/>;
+      console.log(this.accessToken);
+      renderLoginOrMain = <Main user={this.state.user} accessToken={this.state.accessToken}/>;
     }
 
     return (
@@ -79,6 +80,7 @@ class App extends Component {
     const requestURL = "https://www.googleapis.com/oauth2/v1/userinfo?alt=json";
     const requestHeaders = new Headers();
     this.setState({accessToken: accessToken});
+    this.itemService = new ItemService(accessToken);
     requestHeaders.append('Authorization', 'Bearer ' + accessToken);
     const driveRequest = new Request(requestURL, {
       method: "GET",
@@ -96,7 +98,7 @@ class App extends Component {
 
   async notifyUser(authUser) {
     console.log(authUser);
-    let newUser = await this.itemService.checkUserExists(authUser.email, this.state.accessToken);
+    let newUser = await this.itemService.checkUserExists(authUser.email);
     if (newUser == null) {
       this.setState({ status: "register", user: authUser });
     } else {
