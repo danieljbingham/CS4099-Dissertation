@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import ItemService from './item-service'
 import Opportunity from './Opportunity';
-import ReactPaginate from 'react-paginate';
+import ReactPaginate from 'react-paginate'; // pagination
 import './Shortlist.css'
 
 class Shortlist extends Component {
@@ -20,29 +20,24 @@ class Shortlist extends Component {
             selectedItem: {},
             showDetails: false,
             editing: false,
-            urls: [{title:"", url:""}],
+            urls: [{ title: "", url: "" }],
             status: "",
             filter: {
                 all: true,
                 shortlisted: true,
                 applying: true,
                 submitted: true,
-                closed: true                
+                closed: true
             }
         }
     }
 
+    // function gets called on load
     async componentDidMount() {
-        /*this.getItems().then(opps => {
-            console.log("cdm near done boi " + opps)
-            this.setState({ opportunities: opps });
-            console.log("cdm done boi " + this.state.opportunities)
-        });*/
-
-        //this.getPages();
         this.getItems();
     }
 
+    // function gets called if props update
     componentDidUpdate(prevProps) {
         if (this.props.pages !== prevProps.pages) {
             this.setState({
@@ -53,43 +48,43 @@ class Shortlist extends Component {
 
     render() {
 
-        const items = this.state.filteredItems.slice(this.state.pageNo*5, this.state.pageNo*5 + 5);
-        console.log(this.state.filteredItems);
-        console.log(items);
+        // map opportunities to list of Opportunity components
+        const items = this.state.filteredItems.slice(this.state.pageNo * 5, this.state.pageNo * 5 + 5);
         if (!items) return null;
         const listItems = items.map((item) =>
             <Opportunity opportunity={item} onClick={this.urlClick} />
         );
 
         if (this.state.showDetails == false) {
+            // default view for this tab, list all shortlisted opportunities
             return (
                 <div className="shortlist">
 
                     <div className="filters">
-                    <label>
-                        Show all
-                        <input type="checkbox" checked={this.state.filter.all} title="all" onChange={this.handleChange} />
-                    </label>
-                    <label>
-                        Shortlisted
-                        <input type="checkbox" checked={this.state.filter.shortlisted} title="shortlisted" onChange={this.handleChange} />
-                    </label>
-                    <label>
-                        Applying
-                        <input type="checkbox" checked={this.state.filter.applying} title="applying" onChange={this.handleChange} />
-                    </label>
-                    <label>
-                        Submitted
-                        <input type="checkbox" checked={this.state.filter.submitted} title="submitted" onChange={this.handleChange} />
-                    </label>
-                    <label>
-                        Closed
-                        <input type="checkbox" checked={this.state.filter.closed} title="closed" onChange={this.handleChange} />
-                    </label>
+                        <label>
+                            Show all
+                        <input type="checkbox" checked={this.state.filter.all} title="all" onChange={this.handleCheckboxChange} />
+                        </label>
+                        <label>
+                            Shortlisted
+                        <input type="checkbox" checked={this.state.filter.shortlisted} title="shortlisted" onChange={this.handleCheckboxChange} />
+                        </label>
+                        <label>
+                            Applying
+                        <input type="checkbox" checked={this.state.filter.applying} title="applying" onChange={this.handleCheckboxChange} />
+                        </label>
+                        <label>
+                            Submitted
+                        <input type="checkbox" checked={this.state.filter.submitted} title="submitted" onChange={this.handleCheckboxChange} />
+                        </label>
+                        <label>
+                            Closed
+                        <input type="checkbox" checked={this.state.filter.closed} title="closed" onChange={this.handleCheckboxChange} />
+                        </label>
                     </div>
 
                     {listItems}
-    
+
                     <ReactPaginate
                         previousLabel={'<'}
                         nextLabel={'>'}
@@ -103,70 +98,72 @@ class Shortlist extends Component {
                         activeClassName={'active'}
                         forcePage={this.state.pageNo}
                     />
-    
+
                 </div>
             )
         } else {
+            // detailed view for a single selected opportunity
+
             const opp = this.state.selectedItem;
 
             var editing = null;
             if (this.state.editing) {
+                // in editing mode (i.e. adding links, changing status etc)
                 editing = <div>
-                <br />
-                <label>
-                Links:
-                    {this.state.urls.map((urlObj, index) => 
+                    <br />
+                    <label>
+                        Links:
+                        {this.state.urls.map((urlObj, index) =>
                         <div className="linksEditing">
-                        <input type="text" title="title" placeholder="Resource name" value={urlObj.title} onChange={(e) => this.handleUrlsChange(index, e)} />
-                        <input type="text" title="url" placeholder="URL" value={urlObj.url} onChange={(e) => this.handleUrlsChange(index, e)} /> 
-                        <button id="remove" title="Remove" onClick={(e) => this.removeUrl(index, e)}>-</button>
-                        </div>                               
-                    )}
-                <button id="add" className="secondary-btn" onClick={this.addUrl} type="button">Add another URL</button>
+                            <input type="text" title="title" placeholder="Resource name" value={urlObj.title} onChange={(e) => this.handleUrlsChange(index, e)} />
+                            <input type="text" title="url" placeholder="URL" value={urlObj.url} onChange={(e) => this.handleUrlsChange(index, e)} />
+                            <button id="remove" title="Remove" onClick={(e) => this.removeUrl(index, e)}>-</button>
+                        </div>
+                        )}
+                        <button id="add" className="secondary-btn" onClick={this.addUrl} type="button">Add another URL</button>
+                    </label>
+                    <br />
 
-                </label>
-                <br />
+                    <label>
+                        Set status:
+                        <br />
+                        <select value={this.state.status} onChange={this.handleDropdownChange} required="required">
+                            <option value="shortlisted">Shortlisted opportunity</option>
+                            <option value="applying">Working on application</option>
+                            <option value="submitted">Application submitted</option>
+                            <option value="closed">Opportunity closed</option>
+                        </select>
+                    </label>
 
-                <label>
-                Set status:
-                <br />
-                <select value={this.state.status} onChange={this.handleDropdownChange} required="required">
-                <option value="shortlisted">Shortlisted opportunity</option>
-                <option value="applying">Working on application</option>
-                <option value="submitted">Application submitted</option>
-                <option value="closed">Opportunity closed</option>
-                </select>
+                    <br />
 
-                </label>
-                <br />
-
-                <button id="submit" type="button" onClick={this.submitChanges}>Submit changes</button>
+                    <button id="submit" type="button" onClick={this.submitChanges}>Submit changes</button>
                 </div>
             } else {
+                // not in editing mode, just show opportunity details
                 editing = <div>
-                <br />
-                <label>
-                Links:
-                    {console.log(this.state.urls.length)}
-                    {this.state.urls.length > 1 || (this.state.urls[0].url != "" && this.state.urls[0].title != "") ?
-                    this.state.urls.map((urlObj, index) => 
-                        <a href={this.addhttp(urlObj.url)} className="links">
-                        <p>{urlObj.title}</p>
-                        </a>                               
-                    ) : <span> none<br /></span>              
-                    }
-                </label>
-                <br />
+                    <br />
+                    <label>
+                        Links:
+                        {this.state.urls.length > 1 || (this.state.urls[0].url != "" && this.state.urls[0].title != "") ?
+                            this.state.urls.map((urlObj, index) =>
+                                <a href={this.addhttp(urlObj.url)} className="links">
+                                    <p>{urlObj.title}</p>
+                                </a>
+                            ) : <span> none<br /></span>
+                        }
+                    </label>
+                    <br />
 
-                <label>
-                <p>Status: {this.state.status}</p>
-                </label>
+                    <label>
+                        <p>Status: {this.state.status}</p>
+                    </label>
 
-                <button id="edit" type="button" onClick={this.startEditing}>Edit</button>
-                <a id="share" class="secondary-btn" onClick={(e) => window.open(this.mailtoLink())} target="_blank">Share by email</a>
+                    <button id="edit" type="button" onClick={this.startEditing}>Edit</button>
+                    <a id="share" class="secondary-btn" onClick={(e) => window.open(this.mailtoLink())} target="_blank">Share by email</a>
                 </div>
             }
-                
+
             return (
                 <div className="shortlist">
                     <div className="detail">
@@ -179,7 +176,7 @@ class Shortlist extends Component {
                             <span>{date.title}: {date.date}<br /></span>
                         )}</p>
                         <p>Tags: {opp.tags.join(', ')}</p>
-                        
+
                         <hr />
                         {editing}
 
@@ -190,71 +187,68 @@ class Shortlist extends Component {
 
     }
 
+    // generate mailto link for the selected opportunity
     mailtoLink() {
         var opp = this.state.selectedItem;
         var dates = JSON.parse(opp.dates).map((date) => date.title + ": " + date.date);
         var links = this.state.urls.map((url) => url.title + ": " + url.url);
 
         var subjectStr = "Funding Opportunity: " + opp.title;
-        var bodyStr =   "I came across a funding opportunity that I thought you might like to see!%0A%0A" +
-                        opp.title + " %0A%0A" +
-                        opp.description + " %0A%0A" +
-                        opp.fundingDescription + " %0A%0A" +
-                        dates.join(" %0A") + " %0A%0A" +
-                        links.join(" %0A") + " %0A%0A" +
-                        "Read more at " + opp.url + " %0A%0A" +
-                        "Shared from Idea to Grant browser extension";
+        var bodyStr = "I came across a funding opportunity that I thought you might like to see!%0A%0A" +
+            opp.title + " %0A%0A" +
+            opp.description + " %0A%0A" +
+            opp.fundingDescription + " %0A%0A" +
+            dates.join(" %0A") + " %0A%0A" +
+            links.join(" %0A") + " %0A%0A" +
+            "Read more at " + opp.url + " %0A%0A" +
+            "Shared from Idea to Grant browser extension";
+
         return "mailto:?body=" + bodyStr.replace(/ /g, '%20') + "&subject=" + subjectStr.replace(/ /g, '%20');
     }
 
+    // get shortlisted items from API
     async getItems() {
+        // first get shortlist
         this.itemService.retrieveShortlist(this.props.user._links.self.href).then(shortlists => {
-            console.log(JSON.stringify(shortlists));
-            this.setState({ shortlist:shortlists })
+            this.setState({ shortlist: shortlists })
             Promise.all(shortlists.map(item => {
-                console.log(item);
+                // then get each opportunity in the shortlist
                 return this.itemService.getItem(item._links.opportunity.href);
             })).then(opps => {
-                console.log(opps);
-                this.setState({ items:opps });
+                this.setState({ items: opps });
                 this.filterItems(this.state.filter);
             })
         }
         );
     }
 
-    getPages() {
-        this.itemService.retrieveShortlistPages(this.props.user._links.self.href).then(pages => {
-            this.setState({ pages: pages, originalPages: pages });
-        }
-        );
-    }
-
+    // click function for individual opportunity (Read more... link)
     urlClick(item) {
+        // get opportunity details then set this as the selected opportunity
         const shortlistItem = this.getShortlistItem(item);
         const urlsArr = JSON.parse(shortlistItem.urls);
-        console.log(shortlistItem);
-        console.log(urlsArr);
 
         if (urlsArr.length > 0) {
             this.setState({
-                urls : JSON.parse(shortlistItem.urls),
+                urls: JSON.parse(shortlistItem.urls),
             })
         }
- 
+
         this.setState({
-            status : shortlistItem.status,
+            status: shortlistItem.status,
             showDetails: true,
             selectedItem: item,
             editing: false
         });
     }
 
+    // get shortlist entry for the given opportunity
     getShortlistItem = (opp) => {
         var index = this.state.filteredItems.indexOf(opp);
         return this.state.filteredShortlist[index];
     }
 
+    // updates shorlist item after changes made in editing mode
     setShortlistItem = (opp, shortlistItem) => {
         var index = this.state.filteredItems.indexOf(opp);
         let dummyShortlist = this.state.filteredShortlist;
@@ -264,6 +258,7 @@ class Shortlist extends Component {
         });
     }
 
+    // click function for going into editing mode
     startEditing = async (e) => {
         e.preventDefault();
         this.setState({
@@ -271,6 +266,7 @@ class Shortlist extends Component {
         });
     }
 
+    // click function for submitting changes in editing mode
     submitChanges = async (e) => {
         e.preventDefault();
 
@@ -279,26 +275,25 @@ class Shortlist extends Component {
             "status": this.state.status,
             "urls": JSON.stringify(this.state.urls),
         };
-        console.log(requestBody);
+
         let response = await this.itemService.editShortlistItem(requestBody, shortlistItem._links.self.href);
-        console.log("Response: " + JSON.stringify(response));
 
         this.setShortlistItem(this.state.selectedItem, response);
         this.setState({
             editing: false,
         });
-
-
     }
 
+    // click function for back button
     backToOpportunities = async (e) => {
         e.preventDefault();
         this.setState({
             showDetails: false,
-            urls: [{title:"", url:""}]
+            urls: [{ title: "", url: "" }]
         });
     }
 
+    // change function for adding links to a shortlisted opportunity
     handleUrlsChange = (index, e) => {
         e.preventDefault();
 
@@ -315,23 +310,25 @@ class Shortlist extends Component {
                 break;
         }
 
-        this.setState({urls:dummyUrls});
-
+        this.setState({ urls: dummyUrls });
     }
 
+    // click function for removing a link from shortlisted opportunity
     removeUrl = (index, e) => {
         e.preventDefault();
         var dummyUrls = this.state.urls;
         dummyUrls.splice(index, 1);
-        this.setState({urls:dummyUrls});
+        this.setState({ urls: dummyUrls });
     }
 
+    // click function for adding space for a link to a shortlisted opportunity
     addUrl = () => {
         var dummyUrls = this.state.urls;
-        dummyUrls.push({title:"", url:""});
-        this.setState({urls:dummyUrls});
+        dummyUrls.push({ title: "", url: "" });
+        this.setState({ urls: dummyUrls });
     }
 
+    // add http to a url if it doesn't already have a protocol
     addhttp(url) {
         if (!/^(?:ht)tps?\:\/\//.test(url)) {
             url = "http://" + url;
@@ -339,18 +336,21 @@ class Shortlist extends Component {
         return url;
     }
 
+    // filter opportunities based on status checkboxes
     filterItems(f) {
         let dummyFilteredItems = [];
         let dummyFilteredShortlist = [];
 
+        // iterate through opportunities and add to array if 
+        // it matches one of the selected checkboxes
         this.state.shortlist.forEach((item, index) => {
             if ((f.shortlisted && item.status == "shortlisted") ||
                 (f.applying && item.status == "applying") ||
                 (f.submitted && item.status == "submitted") ||
                 (f.closed && item.status == "closed")) {
-                    dummyFilteredShortlist.push(item);
-                    dummyFilteredItems.push(this.state.items[index]);
-                }
+                dummyFilteredShortlist.push(item);
+                dummyFilteredItems.push(this.state.items[index]);
+            }
         });
 
         this.setState({
@@ -358,24 +358,28 @@ class Shortlist extends Component {
             filteredItems: dummyFilteredItems,
             filteredShortlist: dummyFilteredShortlist,
             pageNo: 0,
-            pages: Math.ceil(dummyFilteredShortlist.length/5)
+            pages: Math.ceil(dummyFilteredShortlist.length / 5)
         });
     }
 
+    // onChange function for status dropdown
     handleDropdownChange = (e) => {
         e.persist();
         let selected = e.target.value;
-        console.log("CHANGED:", selected);
         this.setState({ status: selected })
     }
 
-    handleChange = (e) => {
+    // onChange function for checkboxes, sets the statuses as necessary
+    handleCheckboxChange = (e) => {
         let name = e.target.title;
         let value = e.target.checked;
         let dummyFilters = this.state.filter;
 
         switch (name) {
             case "all":
+                // if the "all" checkbox is checked
+                // then all status should either be ticked,
+                // or all should be unticked
                 if (value) {
                     dummyFilters = {
                         all: true,
@@ -383,7 +387,7 @@ class Shortlist extends Component {
                         applying: true,
                         submitted: true,
                         closed: true
-                    }                            
+                    }
                 } else {
                     dummyFilters = {
                         all: false,
@@ -391,7 +395,7 @@ class Shortlist extends Component {
                         applying: false,
                         submitted: false,
                         closed: false
-                    }    
+                    }
                 }
                 break;
             case "shortlisted":
@@ -405,12 +409,12 @@ class Shortlist extends Component {
                 break;
             case "closed":
                 dummyFilters.closed = value;
-                break;     
+                break;
         }
 
         if (dummyFilters.shortlisted && dummyFilters.applying && dummyFilters.submitted && dummyFilters.closed &&
             !dummyFilters.all) {
-                dummyFilters.all = true;
+            dummyFilters.all = true;
         }
 
         if (!(dummyFilters.shortlisted && dummyFilters.applying && dummyFilters.submitted && dummyFilters.closed)) {
@@ -418,19 +422,16 @@ class Shortlist extends Component {
         }
 
         this.filterItems(dummyFilters);
-        /*this.setState({
-            filter: dummyFilters
-        })*/
-
     }
-    
+
+    // click function for pagination
     handlePageClick = (data) => {
         let selected = data.selected;
         this.getItems(selected);
         if (this.state.filteredItems.length > 0) {
-            this.setState({items: this.state.taggedItems.slice(selected*5,selected*5 + 5)});
+            this.setState({ items: this.state.taggedItems.slice(selected * 5, selected * 5 + 5) });
         }
-        this.setState({pageNo: selected});
+        this.setState({ pageNo: selected });
     };
 
 }

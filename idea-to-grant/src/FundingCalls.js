@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import ItemService from './item-service'
 import Opportunity from './Opportunity';
-import Tags from "@yaireo/tagify/dist/react.tagify"
-import ReactPaginate from 'react-paginate';
+import Tags from "@yaireo/tagify/dist/react.tagify" // React-wrapper file for tagify
+import ReactPaginate from 'react-paginate'; // pagination
 import "@yaireo/tagify/dist/tagify.css" // Tagify CSS
 import './FundingCalls.css'
 
@@ -27,14 +27,6 @@ class FundingCalls extends Component {
             confirmDeletion: false,
             showTitleInput: false,
             tagPresetTitle: "",
-            settings: {
-                dropdown:{
-                    maxItems: 12,           // <- mixumum allowed rendered suggestions
-                    enabled: 0,             // <- show suggestions on focus
-                    closeOnSelect: false    // <- do not hide the suggestions dropdown once an item has been selected
-                },
-                placeholder:"Type some tags..."
-            },
 
             titleError: "",
             tagsError: ""
@@ -46,13 +38,12 @@ class FundingCalls extends Component {
         }
     }
 
+    // function gets called on load
     componentDidMount() {
-        //this.getPages();
         this.getItems(0);
-        //this.getTags();
-        //this.getTagPresets();
     }
 
+    // function gets called if props update
     componentDidUpdate(prevProps) {
         if (this.props.pages !== prevProps.pages) {
             this.setState({
@@ -66,32 +57,35 @@ class FundingCalls extends Component {
             this.setState({
                 tagifyProps: dummyTagifyProps
             })
-        }    
+        }
 
         if (this.props.tagPresets !== prevProps.tagPresets) {
             this.setState({
                 tagPresets: this.props.tagPresets
             })
-        }    
+        }
     }
 
     render() {
 
+        // map opportunities to list of Opportunity components
         const items = this.state.items;
         if (!items) return null;
         const listItems = items.map((item) =>
             <Opportunity opportunity={item} onClick={this.urlClick} />
         );
 
+        // map tagPresets to options in dropdown box
         const tagPresets = this.state.tagPresets;
         let tagPresetsOptions = [];
         tagPresetsOptions = tagPresets.map((preset) =>
             <option value={JSON.stringify(preset.tags)}>{preset.title}</option>
         );
-        
+
+        // option to save a search, only shown if requested
         let tagTitleInput = <div id="tagTitle">
             <div id="tagTitleInput">
-                <input type="text" value={this.state.tagPresetTitle} onChange={this.tagPresetTitleChange} title="title" placeholder="Title of your saved search..."/>
+                <input type="text" value={this.state.tagPresetTitle} onChange={this.tagPresetTitleChange} title="title" placeholder="Title of your saved search..." />
                 <button id="saveTitle" title="Save Tag Preset" onClick={this.savePreset}>Save</button>
             </div>
             <div id="tagTitleErrors">
@@ -101,15 +95,23 @@ class FundingCalls extends Component {
         </div>
 
         if (this.state.showDetails == false) {
+            // default view for this tab, list all opportunities
             return (
                 <div className="fundingCalls">
 
                     <div id="tagRow">
                         <Tags
-                            tagifyRef={this.state.tagifyRef} // optional Ref object for the Tagify instance itself, to get access to inner-methods
-                            settings={this.state.settings}
-                            {...this.state.tagifyProps}   // dynamic props such as "loading", "showDropdown:'abc'", "value"
-                            onChange={this.onChange}
+                            tagifyRef={this.state.tagifyRef} // Ref object for Tagify instance to get access to inner-methods
+                            settings= {{
+                                dropdown: {
+                                    maxItems: 12,          
+                                    enabled: 0,             
+                                    closeOnSelect: false
+                                },
+                                placeholder: "Type some tags..."
+                            }}
+                            {...this.state.tagifyProps}   // dynamic props
+                            onChange={this.onTagsChange}
                         />
                         <button id="save" title="Save Tag Preset" onClick={this.showPresetTitleInput}>+</button>
                     </div>
@@ -122,7 +124,7 @@ class FundingCalls extends Component {
                         {tagPresetsOptions}
                     </select>
 
-                    {listItems}
+                    {listItems} {/* this displays the list of opportunities */}
 
                     <ReactPaginate
                         previousLabel={'<'}
@@ -141,8 +143,10 @@ class FundingCalls extends Component {
                 </div>
             )
         } else {
+            // detailed view for a single selected opportunity
+
             const opp = this.state.selectedItem;
-    
+
             return (
                 <div className="fundingCalls">
                     <div className="detail">
@@ -155,19 +159,19 @@ class FundingCalls extends Component {
                             <span>{date.title}: {date.date}<br /></span>
                         )}</p>
                         <p>Tags: {opp.tags.join(', ')}</p>
-                        {(this.props.user.role === "researcher") && 
+                        {(this.props.user.role === "researcher") &&
                             <button type="button" onClick={this.handleSubmit}>Add to shortlist</button>
                         }
-                        {(this.props.user.role !== "researcher") && 
+                        {(this.props.user.role !== "researcher") &&
                             <button type="button" className="remove" onClick={this.confirmDeletion}>Remove from funding calls</button>
                         }
                         <a id="share" class="secondary-btn" onClick={(e) => window.open(this.mailtoLink())} target="_blank">Share by email</a>
                         <br />
                         {(this.props.user.role !== "researcher") && (this.state.confirmDeletion) &&
                             <button type="button" className="remove" onClick={this.handleRemove}>Confirm deletion</button>
-                        }                        
+                        }
                         {(this.props.user.role !== "researcher") && (this.state.confirmDeletion) &&
-                        <button type="button" class="secondary-btn" onClick={this.cancelConfirmDeletion}>Cancel</button>
+                            <button type="button" class="secondary-btn" onClick={this.cancelConfirmDeletion}>Cancel</button>
                         }
                     </div>
                 </div>
@@ -175,6 +179,7 @@ class FundingCalls extends Component {
         }
     }
 
+    // get ith page of opportunities from API
     getItems(i) {
         this.itemService.retrieveOpportunities(i).then(opps => {
             this.setState({ items: opps });
@@ -182,68 +187,46 @@ class FundingCalls extends Component {
         );
     }
 
-    getPages() {
-        this.itemService.retrieveOpportunitiesPages().then(pages => {
-            this.setState({ pages: pages, originalPages: pages });
-        }
-        );
-    }
-
-    getTagPresets() {
-        this.itemService.retrieveTagPresets(this.props.user._links.tagPresets.href).then(presets => {
-            this.setState({ tagPresets: presets });
-        }
-        );
-    }
-
+    // onClick function for + button to start a saved search
     showPresetTitleInput = async (e) => {
         e.preventDefault();
-        this.setState({showTitleInput: true});
+        this.setState({ showTitleInput: true });
     }
 
+    // onChange function for title of saved search
     tagPresetTitleChange = (e) => {
         e.preventDefault();
 
         let value = e.target.value;
         this.inputValid("title", value);
-        this.setState({ tagPresetTitle: value});
+        this.setState({ tagPresetTitle: value });
     }
 
+    // onClick function for saving a saved search
     savePreset = async (e) => {
         e.preventDefault();
-        console.log("submit");
-        
+
+        // check title and tags are valid first
+
         if (this.savePresetValid()) {
             let requestBody = {
                 "title": this.state.tagPresetTitle,
                 "user": this.props.user._links.self.href,
                 "tags": this.state.tags
             };
-            console.log(requestBody);
             let response = await this.itemService.createTagPreset(requestBody);
-            console.log("Response: " + JSON.stringify(response));
             this.props.addTagPreset(response);
-            //this.setState({tagPresets: [...this.state.tagPresets, response], showTitleInput: false, tagPresetTitle: ""});
-            this.setState({showTitleInput: false, tagPresetTitle: ""});
+            this.setState({ showTitleInput: false, tagPresetTitle: "" });
         }
     }
 
-    onSelect(itemLink) {
-        this.clearState();
-        this.itemService.getItem(itemLink).then(item => {
-            this.setState({
-                showDetails: true,
-                selectedItem: item
-            });
-        }
-        );
-    }
-
+    // click function for back button when viewing an opportunity
     backToOpportunities = async (e) => {
         e.preventDefault();
-        this.setState({showDetails: false, confirmDeletion: false});
+        this.setState({ showDetails: false, confirmDeletion: false });
     }
 
+    // submit function for adding an opportunity to researcher's shortlist
     handleSubmit = async (e) => {
         e.preventDefault();
         let shortlistRequest = {
@@ -252,20 +235,21 @@ class FundingCalls extends Component {
             "urls": "[]",
             "status": "shortlisted"
         }
-        console.log("shortlistRequest: " + JSON.stringify(shortlistRequest));
         this.itemService.createShortlistItem(shortlistRequest);
         this.props.changeTab(2);
 
     }
 
+    // submit function for bdm removing an opportunity from system
     handleRemove = async (e) => {
-        e.preventDefault();      
+        e.preventDefault();
 
-        this.setState({showDetails: false, pageNo: 0});
+        this.setState({ showDetails: false, pageNo: 0 });
         let response = await this.itemService.removeOpportunity(this.state.selectedItem._links.self.href);
-        console.log("Remove response: " + JSON.stringify(response));
+        this.getItems(0);
     }
 
+    // click function for viewing an opportunity in more detail
     urlClick(item) {
         this.setState({
             showDetails: true,
@@ -273,64 +257,60 @@ class FundingCalls extends Component {
         });
     }
 
-    getTags() {
-
-        this.itemService.retrieveTags().then(tags => {
-            var dummyTagifyProps = this.state.tagifyProps;
-            dummyTagifyProps.whitelist = tags;
-            this.setState({
-                tagifyProps: dummyTagifyProps
-            })
-        }
-        );
-
-    }
-
+    // click event for pagination
     handlePageClick = (data) => {
         let selected = data.selected;
         this.getItems(selected);
         if (this.state.taggedItems.length > 0) {
-            this.setState({items: this.state.taggedItems.slice(selected*5,selected*5 + 5)});
+            // paginate tagged items manually
+            this.setState({ items: this.state.taggedItems.slice(selected * 5, selected * 5 + 5) });
         }
-        this.setState({pageNo: selected});
+        this.setState({ pageNo: selected });
     };
 
-    updateOpportunities(values) {
-        if (values === "") {
+    // get opportnuities
+    updateOpportunities(tags) {
+        if (tags === "") {
+            // empty tags so use default function for gettin opportunities
             this.getItems(0);
-            this.setState({pages: this.state.originalPages, taggedItems: []});
+            this.setState({ pages: this.state.originalPages, taggedItems: [] });
         } else {
-            var tagArr = JSON.parse(values).map(item => item.value);
+            // get opportunities from API based on tags
+            let tagArr = JSON.parse(tags).map(item => item.value);
             this.itemService.retrieveTaggedOpportunities(tagArr).then(opps => {
-                this.setState({ taggedItems: opps, items: opps.slice(0,5), pages: Math.ceil(opps.length/5) });
+                this.setState({ taggedItems: opps, items: opps.slice(0, 5), pages: Math.ceil(opps.length / 5) });
             }
             );
         }
     }
 
-    onChange = (e) => {
+    // change function for tags input
+    onTagsChange = (e) => {
         e.persist();
-        console.log(e);
-        console.log(e.target);
-        
-        console.log("CHANGED:", e.target.value);
+
+        // fetch opportunities based on tags
         this.updateOpportunities(e.target.value);
+
+        // set state of tags array
         let tagArr = [];
         if (e.target.value.length > 0) {
             tagArr = JSON.parse(e.target.value).map(item => item.value);
         }
 
         this.inputValid("tags", tagArr);
-        this.setState({ tags: tagArr, pageNo: 0, selectValue:"placeholder"})
+        this.setState({ tags: tagArr, pageNo: 0, selectValue: "placeholder" })
     }
 
+    // onChange function for saved search dropdown 
     chooseTagPreset = (e) => {
         e.persist();
-        var parsedTags = JSON.parse(e.target.value);
-        console.log("CHANGED:", parsedTags);
-        this.state.tagifyRef.current.removeAllTags();
+
+        let parsedTags = JSON.parse(e.target.value);
+        this.state.tagifyRef.current.removeAllTags(); // clear existing tags
+
         let dummyTagifyProps = this.state.tagifyProps;
-        dummyTagifyProps.value = parsedTags;
+        dummyTagifyProps.value = parsedTags; // set tags in Tagify props
+        
         this.setState({
             tagifyProps: dummyTagifyProps,
             tags: parsedTags,
@@ -338,43 +318,46 @@ class FundingCalls extends Component {
         })
     }
 
+    // generate mailto link for the selected opportunity
     mailtoLink() {
         let opp = this.state.selectedItem;
         let dates = JSON.parse(opp.dates).map((date) => date.title + ": " + date.date);
 
         let subjectStr = "Funding Opportunity: " + opp.title;
-        let bodyStr =   "I came across a funding opportunity that I thought you might like to see!%0A%0A" +
-                        opp.title + " %0A%0A" +
-                        opp.description + " %0A%0A" +
-                        opp.fundingDescription + " %0A%0A" +
-                        dates.join(" %0A") + " %0A%0A" +
-                        "Read more at " + opp.url + " %0A%0A" +
-                        "Shared from Idea to Grant browser extension";
-        console.log( "mailto:?body=" + bodyStr.replace(/ /g, '%20') + "&subject=" + subjectStr.replace(/ /g, '%20'));
+        let bodyStr = "I came across a funding opportunity that I thought you might like to see!%0A%0A" +
+            opp.title + " %0A%0A" +
+            opp.description + " %0A%0A" +
+            opp.fundingDescription + " %0A%0A" +
+            dates.join(" %0A") + " %0A%0A" +
+            "Read more at " + opp.url + " %0A%0A" +
+            "Shared from Idea to Grant browser extension";
+            
         return "mailto:?body=" + bodyStr.replace(/ /g, '%20') + "&subject=" + subjectStr.replace(/ /g, '%20');
     }
 
+    // check that all inputs are valid before saving a saved search
     savePresetValid() {
-        return  this.inputValid("title", this.state.tagPresetTitle) &
-        this.inputValid("tags", this.state.tags)
+        return this.inputValid("title", this.state.tagPresetTitle) &
+            this.inputValid("tags", this.state.tags)
     }
 
+    // check validity of given input
     inputValid(name, value) {
         switch (name) {
             case "title":
                 if (!value || !value.trim()) {
-                    this.setState({titleError: "You must include a title"});
+                    this.setState({ titleError: "You must include a title" });
                     return false;
                 } else if (this.state.titleError) {
-                    this.setState({titleError: ""});
+                    this.setState({ titleError: "" });
                 }
                 break;
             case "tags":
                 if (value.length < 1) {
-                    this.setState({tagsError: "You must include tags to save a preset"});
+                    this.setState({ tagsError: "You must include tags to save a preset" });
                     return false;
                 } else if (this.state.tagsError) {
-                    this.setState({tagsError: ""});
+                    this.setState({ tagsError: "" });
                 }
                 break;
         }
@@ -383,12 +366,15 @@ class FundingCalls extends Component {
 
     }
 
-    cancelConfirmDeletion = (e) => { 
-        this.setState({confirmDeletion: false});
+    // click event for cancel choice when deleting
+    cancelConfirmDeletion = (e) => {
+        this.setState({ confirmDeletion: false });
     }
 
-    confirmDeletion = (e) => { 
-        this.setState({confirmDeletion: true});
+    // click event for deleting, state indicates that the user should be
+    // asked to confirm their choice to delete
+    confirmDeletion = (e) => {
+        this.setState({ confirmDeletion: true });
     }
 }
 

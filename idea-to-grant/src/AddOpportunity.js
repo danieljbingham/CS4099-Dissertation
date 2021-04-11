@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import './AddOpportunity.css'
 import ItemService from './item-service'
-import Tags from "@yaireo/tagify/dist/react.tagify" // React-wrapper file
+import Tags from "@yaireo/tagify/dist/react.tagify" // React-wrapper file for tagify
 import "@yaireo/tagify/dist/tagify.css" // Tagify CSS
-const toDate = require('normalize-date');
+const toDate = require('normalize-date'); // package for converting dates
 
 class AddOpportunity extends Component {
     constructor(props) {
@@ -12,17 +12,16 @@ class AddOpportunity extends Component {
         this.scanPage = this.scanPage.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
-        this.handleDate = this.handleDate.bind(this);
+        this.handleDateFormat = this.handleDateFormat.bind(this);
         this.handleDatesChange = this.handleDatesChange.bind(this);
         this.addDate = this.addDate.bind(this);
-        this.getTags = this.getTags.bind(this);
         this.submitTab = this.submitTab.bind(this);
         this.state = {
             showDetails: false,
 
             title: "",
             url: "",
-            dates: [{title:"", date:""}],
+            dates: [{ title: "", date: "" }],
             description: "",
             fullEcon: false,
             fundingDesc: "",
@@ -41,6 +40,7 @@ class AddOpportunity extends Component {
         }
     }
 
+    // function gets called if props update
     componentDidUpdate(prevProps) {
         if (this.props.tags !== prevProps.tags) {
             let dummyTagifyProps = this.state.tagifyProps;
@@ -49,11 +49,11 @@ class AddOpportunity extends Component {
                 tagifyProps: dummyTagifyProps
             })
         }
-      }
-      
+    }
+
 
     render() {
-        
+
         return (
             <div className="addOpportunity">
                 <button type="button" id="scan" onClick={this.scanPage}>Scan Page</button>
@@ -73,15 +73,15 @@ class AddOpportunity extends Component {
                     </label>
                     <label>
                         Deadlines:
-                            {this.state.dates.map((dateObj, index) => 
-                                <div className="dates">
-                                <input type="text" title="title" value={dateObj.title} onChange={(e) => this.handleDatesChange(index, e)} />
-                                <input type="text" className="date" placeholder="yyyy-mm-dd" value={dateObj.date} title="date"
-                                onChange={(e) => this.handleDatesChange(index, e)} onBlur={(e) => this.handleDate(index, e)} />
-                                <button id="remove" title="Remove" type="button" onClick={(e) => this.removeDate(index, e)}>-</button>
-                                </div>                               
-                            )}
-                            {(this.state.datesError) &&
+                            {this.state.dates.map((dateObj, index) =>
+                        <div className="dates">
+                            <input type="text" title="title" value={dateObj.title} onChange={(e) => this.handleDatesChange(index, e)} />
+                            <input type="text" className="date" placeholder="yyyy-mm-dd" value={dateObj.date} title="date"
+                                onChange={(e) => this.handleDatesChange(index, e)} onBlur={(e) => this.handleDateFormat(index, e)} />
+                            <button id="remove" title="Remove" type="button" onClick={(e) => this.removeDate(index, e)}>-</button>
+                        </div>
+                    )}
+                        {(this.state.datesError) &&
                             <p className="error dateError">{this.state.datesError}</p>}
                         <button id="add" className="secondary-btn" onClick={this.addDate} type="button">Add another date</button>
                     </label>
@@ -106,16 +106,16 @@ class AddOpportunity extends Component {
                     <label>
                         Tags:
                         <Tags
-                            tagifyRef={this.state.tagifyRef} // optional Ref object for the Tagify instance itself, to get access to inner-methods
+                            tagifyRef={this.state.tagifyRef} // Ref object for Tagify instance to get access to inner-methods
                             settings={{
                                 dropdown: {
-                                    maxItems: 12,           // <- mixumum allowed rendered suggestions
-                                    enabled: 0,             // <- show suggestions on focus
-                                    closeOnSelect: false    // <- do not hide the suggestions dropdown once an item has been selected
+                                    maxItems: 12,           
+                                    enabled: 0,             
+                                    closeOnSelect: false   
                                 },
                                 placeholder: "Type some tags..."
                             }}
-                            {...this.state.tagifyProps}   // dynamic props such as "loading", "showDropdown:'abc'", "value"
+                            {...this.state.tagifyProps}   // dynamic props
                             onChange={e => (e.persist(), this.setTags(e.target.value))}
                         />
                     </label>
@@ -126,7 +126,9 @@ class AddOpportunity extends Component {
             </div>
         )
     }
-    
+
+    // onClick function for Scan Page button, gets information from active tab
+    // and displays it in the sidebar
     scanPage = () => {
         browser.tabs.query({ active: true, currentWindow: true }, tabs => {
             const url = new URL(tabs[0].url).href;
@@ -134,7 +136,7 @@ class AddOpportunity extends Component {
             this.setState({
                 title: title,
                 url: url,
-                dates: [{title:"", date:""}],
+                dates: [{ title: "", date: "" }],
                 description: "",
                 fundingDesc: "",
                 tags: []
@@ -143,9 +145,11 @@ class AddOpportunity extends Component {
         });
     }
 
+    // onClick function for form submit button
     handleSubmit = async (e) => {
         e.preventDefault();
 
+        // validate form before posting to API
         if (this.formValid()) {
             let requestBody = {
                 "title": this.state.title,
@@ -158,9 +162,10 @@ class AddOpportunity extends Component {
                 "tags": this.state.tags
             };
 
-            let response = await this.itemService.createItem(requestBody);
+            let response = await this.itemService.createOpportunity(requestBody);
 
-            
+            // if the user is a researcher, then the the opportunity must
+            // also be added to the user's shortlist, which is another API call
             if (this.props.user.role === "researcher") {
                 let shortlistRequest = {
                     "user": this.props.user._links.self.href,
@@ -170,18 +175,21 @@ class AddOpportunity extends Component {
                 }
                 this.itemService.createShortlistItem(shortlistRequest)
             }
-    
+
+            // reset form after submission
             this.setState({
                 title: "",
                 url: "",
-                dates: [{title:"", date:""}],
+                dates: [{ title: "", date: "" }],
                 description: "",
                 fundingDesc: "",
                 fullEcon: false,
                 tags: []
             })
             this.state.tagifyRef.current.removeAllTags();
-    
+
+            // if a researcher submits, take them to their shortlist
+            // if a bdm submits, take them to the funding calls tab
             if (this.props.user.role === "researcher") {
                 this.props.recacheShortlistPages();
                 this.submitTab(2);
@@ -192,6 +200,8 @@ class AddOpportunity extends Component {
         }
     }
 
+    // onChange function to deal with changes on form inputs,
+    // simply sets state as needed for controlled components
     handleChange = (e) => {
         let name = e.target.title;
         let value = e.target.value;
@@ -203,24 +213,25 @@ class AddOpportunity extends Component {
 
         switch (name) {
             case "title":
-                this.setState({title: value});
+                this.setState({ title: value });
                 break;
             case "url":
-                this.setState({url: value});
+                this.setState({ url: value });
                 break;
             case "description":
-                this.setState({description: value});
+                this.setState({ description: value });
                 break;
             case "fundingDesc":
-                this.setState({fundingDesc: value});
+                this.setState({ fundingDesc: value });
                 break;
             case "fullEcon":
-                this.setState({fullEcon: value});
-                break; 
-            }
+                this.setState({ fullEcon: value });
+                break;
+        }
 
     }
 
+    // onChange function to deal with changes on date inputs
     handleDatesChange = (index, e) => {
         e.preventDefault();
 
@@ -228,7 +239,7 @@ class AddOpportunity extends Component {
         let value = e.target.value;
         let dummyDates = this.state.dates;
 
-
+        // change the state for the correct date object in array of dates
         switch (name) {
             case "title":
                 dummyDates[index].title = value;
@@ -238,12 +249,14 @@ class AddOpportunity extends Component {
                 break;
         }
 
-        this.setState({dates: dummyDates});
+        this.setState({ dates: dummyDates });
         this.inputValid("dates", dummyDates);
 
     }
 
-    handleDate = (index, e) => {
+    // onBlur function for date input,
+    // i.e. when input loses focus, try to format the date automatically
+    handleDateFormat = (index, e) => {
         e.preventDefault();
         let value = e.target.value;
 
@@ -252,120 +265,124 @@ class AddOpportunity extends Component {
             normalisedDate = this.normaliseDate(value);
         } catch (err) {
             if (err instanceof RangeError) {
-              normalisedDate = "";
+                normalisedDate = "";
             }
-          }
-          
-
+        }
+    
+        // update state for date object
         let dummyDates = this.state.dates;
         dummyDates[index].date = normalisedDate;
 
         this.inputValid("dates", dummyDates);
-        this.setState({dates: dummyDates});
+        this.setState({ dates: dummyDates });
     }
 
+    // format date to yyyy-mm-dd
     normaliseDate = (value) => {
         // example ISOString: 2011-10-05T14:48:00.000Z
         // therefore split on T gives yyyy-mm-dd
         return toDate(value).toISOString().split('T')[0];
     }
 
+    // onClick function for adding new date
     addDate = () => {
-        var dummyDates = this.state.dates;
-        dummyDates.push({title:"", date:""});
-        this.setState({dates: dummyDates});
+        let dummyDates = this.state.dates;
+        dummyDates.push({ title: "", date: "" });
+        this.setState({ dates: dummyDates });
     }
 
+    // onClick function for removing date
     removeDate = (index, e) => {
-        var dummyDates = this.state.dates;
+        let dummyDates = this.state.dates;
         dummyDates.splice(index, 1);
         if (dummyDates.length == 0) {
-            dummyDates = [{title:"", date:""}];
+            dummyDates = [{ title: "", date: "" }];
         }
-        this.setState({dates: dummyDates});
+        this.setState({ dates: dummyDates });
     }
 
+    // remove all empty dates, used when clicking submit,
+    // so this ensures no empty dates are posted to API
     removeDates = () => {
-        var dummyDates = this.state.dates;
+        let dummyDates = this.state.dates;
 
         for (let i = dummyDates.length - 1; i >= 0; i--) {
-            if (!dummyDates[i].title || !dummyDates[i].date) { 
+            if (!dummyDates[i].title || !dummyDates[i].date) {
                 dummyDates.splice(i, 1);
             }
         }
-        
+
         if (dummyDates.length == 0) {
-            dummyDates = [{title:"", date:""}];
+            dummyDates = [{ title: "", date: "" }];
         }
-        this.setState({dates: dummyDates});
+        this.setState({ dates: dummyDates });
     }
 
+    // onChange function for Tags component (saves tags in state),
+    // needed for making it a controlled component
     setTags = (values) => {
         if (!values) {
-            this.setState({tags: []});
+            this.setState({ tags: [] });
         } else {
-            var tagArr = JSON.parse(values).map(item => item.value);
-            this.setState({tags: tagArr});
+            let tagArr = JSON.parse(values).map(item => item.value);
+            this.setState({ tags: tagArr });
         }
     }
 
-    getTags() {
-        this.itemService.retrieveTags().then(tags => {
-            var dummyTagifyProps = this.state.tagifyProps;
-            dummyTagifyProps.whitelist = tags;
-            this.setState({
-                tagifyProps: dummyTagifyProps
-            })
-        }
-        );
-    }
-
+    // change tab on submit
     submitTab(i) {
         this.props.changeTab(i);
     }
 
 
+    // validate a given input, display error message if there is a problem
     inputValid(name, value) {
 
         switch (name) {
             case "title":
                 if (!value || !value.trim()) {
-                    this.setState({titleError: "You must include a title"});
+                    this.setState({ titleError: "You must include a title" });
                     return false;
                 } else if (this.state.titleError) {
-                    this.setState({titleError: ""});
+                    this.setState({ titleError: "" });
                 }
                 break;
+
             case "url":
                 if (!value || !value.trim()) {
-                    this.setState({urlError: "You must include a url"});
+                    this.setState({ urlError: "You must include a url" });
                     return false;
                 } else if (this.state.urlError) {
-                    this.setState({urlError: ""});
+                    this.setState({ urlError: "" });
                 }
                 break;
+
             case "description":
                 if (!value || !value.trim()) {
-                    this.setState({descriptionError: "You must include a description"});
+                    this.setState({ descriptionError: "You must include a description" });
                     return false;
                 } else if (this.state.descriptionError) {
-                    this.setState({descriptionError: ""});
+                    this.setState({ descriptionError: "" });
                 }
                 break;
+
             case "fundingDesc":
                 if (!value || !value.trim()) {
-                    this.setState({fundingDescError: "You must include a funding description"});
+                    this.setState({ fundingDescError: "You must include a funding description" });
                     return false;
                 } else if (this.state.fundingDescError) {
-                    this.setState({fundingDescError: ""});
+                    this.setState({ fundingDescError: "" });
                 }
                 break;
-            case "dates": 
+
+            case "dates":
+                // dates will always have at least 1 entry
+                // so check this entry is not empty
                 if (value.length == 1 && (!value[0].title || !value[0].date)) {
-                    this.setState({datesError: "You must include at least one date"});
+                    this.setState({ datesError: "You must include at least one date" });
                     return false;
                 } else if (this.state.datesError) {
-                    this.setState({datesError: ""});
+                    this.setState({ datesError: "" });
                 }
         }
 
@@ -373,18 +390,23 @@ class AddOpportunity extends Component {
 
     }
 
+    // check validity of all inputs before submitting form
     formValid() {
         if (this.inputValid("url", this.state.url)) {
-            this.setState({url: this.addhttp(this.state.url)}); 
+            // add http to url first to ensure it is valid
+            this.setState({ url: this.addhttp(this.state.url) });
         }
-        this.removeDates();
-        return  this.inputValid("title", this.state.title) &
-                this.inputValid("url", this.state.url) &
-                this.inputValid("description", this.state.description) &
-                this.inputValid("fundingDesc", this.state.fundingDesc) &
-                this.inputValid("dates", this.state.dates);
+
+        this.removeDates(); // remove blank dates before checking
+        
+        return this.inputValid("title", this.state.title) &
+            this.inputValid("url", this.state.url) &
+            this.inputValid("description", this.state.description) &
+            this.inputValid("fundingDesc", this.state.fundingDesc) &
+            this.inputValid("dates", this.state.dates);
     }
 
+    // add http to a url if it doesn't already have a protocol
     addhttp(url) {
         if (!/^(?:ht)tps?\:\/\//.test(url)) {
             url = "http://" + url;
