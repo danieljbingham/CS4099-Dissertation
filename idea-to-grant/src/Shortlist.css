@@ -13,7 +13,6 @@
     margin: 12px 0;
 }
 
-
 .shortlist input {
     display: block;
 }
@@ -193,4 +192,8 @@
     border-radius: 20px;
     text-decoration: none;
     cursor: pointer;
+}
+
+.shortlist p.checklistText {
+    padding: 8px 0 0 0;
 }

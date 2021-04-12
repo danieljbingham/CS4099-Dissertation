@@ -192,7 +192,7 @@ class Shortlist extends Component {
                         Checklist:
                         {this.state.checklist.length > 0 && (this.state.checklist[0].title != "") ?
                             this.state.checklist.map((chkObj, index) =>
-                                <p>{chkObj.checked ? "☑️" : "☐"} {chkObj.title}</p>
+                                <p className="checklistText">{chkObj.checked ? "☑️" : "☐"} {chkObj.title}</p>
                             ) : <span> none<br /></span>
                         }
                     </label>
@@ -340,7 +340,8 @@ class Shortlist extends Component {
         this.setState({
             showDetails: false,
             urls: [{ title: "", url: "" }],
-            checklist: [{ title: "", checked: false }]
+            checklist: [{ title: "", checked: false }],
+            confirmDeletion: false
         });
     }
 

@@ -273,7 +273,7 @@ class FundingCalls extends Component {
 
     // get opportnuities
     updateOpportunities(tags) {
-        if (tags === "") {
+        if (tags === "" || JSON.parse(tags).length == 0) {
             // empty tags so use default function for gettin opportunities
             this.getItems(0);
             this.setState({ pages: this.state.originalPages, taggedItems: [] });
@@ -289,15 +289,14 @@ class FundingCalls extends Component {
 
     // change function for tags input
     onTagsChange = (e) => {
-        e.persist();
 
         // fetch opportunities based on tags
-        this.updateOpportunities(e.target.value);
+        this.updateOpportunities(e.detail.value);
 
         // set state of tags array
         let tagArr = [];
-        if (e.target.value.length > 0) {
-            tagArr = JSON.parse(e.target.value).map(item => item.value);
+        if (e.detail.value.length > 0) {
+            tagArr = JSON.parse(e.detail.value).map(item => item.value);
         }
 
         this.inputValid("tags", tagArr);
