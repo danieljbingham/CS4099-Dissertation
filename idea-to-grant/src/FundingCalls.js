@@ -165,7 +165,7 @@ class FundingCalls extends Component {
                         {(this.props.user.role !== "researcher") &&
                             <button type="button" className="remove" onClick={this.confirmDeletion}>Remove from funding calls</button>
                         }
-                        <a id="share" class="secondary-btn" onClick={(e) => window.open(this.mailtoLink())} target="_blank">Share by email</a>
+                        <button id="share" class="secondary-btn" onClick={(e) => window.open(this.mailtoLink())} >Share by email</button>
                         <br />
                         {(this.props.user.role !== "researcher") && (this.state.confirmDeletion) &&
                             <button type="button" className="remove" onClick={this.handleRemove}>Confirm deletion</button>

@@ -1,4 +1,4 @@
-    /*global browser*/
+/*global browser*/
 
 /* from firefox tutorial at https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/identity */
 
@@ -14,7 +14,7 @@ const AUTH_URL =
 const VALIDATION_BASE_URL = "https://www.googleapis.com/oauth2/v3/tokeninfo";
 
 class Authorize {
-  
+
   constructor() {
     this.extractAccessToken = this.extractAccessToken.bind(this);
     this.validate = this.validate.bind(this);

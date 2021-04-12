@@ -15,9 +15,11 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "opportunities", path = "opportunities")
 interface OpportunityRepository extends PagingAndSortingRepository<Opportunity, Long> {
 
+    // gets public opportunities containing one or more of the given tags
     @Query("SELECT DISTINCT o FROM Opportunity o JOIN o.tags t WHERE LOWER(t) IN (:tags) AND o.publicOpportunity = true")
     List<Opportunity> getTagged(@Param("tags") List<String> tags);
 
+    // gets public opportunities descending order (i.e. newest first)
     @RestResource(path = "getOpportunities", rel = "getOpportunities")
     public Page<Opportunity> findByPublicOpportunityTrueOrderByIdDesc(Pageable pageable);
 

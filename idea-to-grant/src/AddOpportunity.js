@@ -376,9 +376,9 @@ class AddOpportunity extends Component {
                 break;
 
             case "dates":
-                // dates will always have at least 1 entry
-                // so check this entry is not empty
-                if (value.length == 1 && (!value[0].title || !value[0].date)) {
+                // check dates is not empty
+                // empty if length is 0 or length is 1 (default) with either title or date not filled in
+                if (value.length == 0 || (value.length == 1 && (!value[0].title || !value[0].date))) {
                     this.setState({ datesError: "You must include at least one date" });
                     return false;
                 } else if (this.state.datesError) {
@@ -396,9 +396,8 @@ class AddOpportunity extends Component {
             // add http to url first to ensure it is valid
             this.setState({ url: this.addhttp(this.state.url) });
         }
-
         this.removeDates(); // remove blank dates before checking
-        
+
         return this.inputValid("title", this.state.title) &
             this.inputValid("url", this.state.url) &
             this.inputValid("description", this.state.description) &

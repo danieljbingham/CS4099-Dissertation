@@ -92,7 +92,6 @@ class Main extends Component {
       this.setState({
         tags: tags
       })
-      console.log(tags);
     }
     );
   }

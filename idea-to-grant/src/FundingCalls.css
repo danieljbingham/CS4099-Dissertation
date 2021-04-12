@@ -114,7 +114,6 @@
 }
 
 .fundingCalls #share {
-    white-space: nowrap;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;

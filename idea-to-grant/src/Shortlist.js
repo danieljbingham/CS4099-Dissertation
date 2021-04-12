@@ -160,7 +160,7 @@ class Shortlist extends Component {
                     </label>
 
                     <button id="edit" type="button" onClick={this.startEditing}>Edit</button>
-                    <a id="share" class="secondary-btn" onClick={(e) => window.open(this.mailtoLink())} target="_blank">Share by email</a>
+                    <button id="share" class="secondary-btn" onClick={(e) => window.open(this.mailtoLink())} target="_blank">Share by email</button>
                 </div>
             }
 

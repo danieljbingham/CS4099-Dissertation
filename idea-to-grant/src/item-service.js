@@ -97,10 +97,23 @@ class ItemService {
       this.handleResponseError(response);
     } else {
       let json = await response.json();
-      console.log(response);
-      console.log(json);
-      console.log(json.page.totalPages);
       return json.page.totalPages;
+    }
+  }
+
+  // get shortlisted opportunities which have the given status
+  async retrieveShortlistByStatus(status, user, page) {
+    var statusStr = status.join(',');
+    let response = await fetch(config.SHORTLIST_STATUS_SEARCH_URL + "?status=" + status + "&user=" + user + "&page=" + page + "&size=5", {
+      headers: new Headers({
+        'Authorization': 'Bearer ' + this.accessToken
+      })
+    });
+    if (!response.ok) {
+      this.handleResponseError(response);
+    } else {
+      let json = await response.json();
+      return json._embedded.shortlist;
     }
   }
 
@@ -253,7 +266,6 @@ class ItemService {
       this.handleResponseError(response);
     } else {
       let json = await response.json();
-      console.log(JSON.stringify(json));
       return json;
     }
   }
