@@ -15,10 +15,17 @@ class Main extends Component {
     this.setTabIndex = this.setTabIndex.bind(this);
     this.recacheOppPages = this.recacheOppPages.bind(this);
     this.recacheShortlistPages = this.recacheShortlistPages.bind(this);
+    this.recacheShortlist = this.recacheShortlist.bind(this);
     this.addTagPreset = this.addTagPreset.bind(this);
+    this.getShortlistOpportunity = this.getShortlistOpportunity.bind(this);
     this.state = {
       tabIndex: 0,
-      tags: []
+      tags: [],
+      oppPages: 0,
+      shortlistPages: 0,
+      shortlist: [],
+      shortlistOpportunities: {},
+      tagPresets: [],
     }
   }
 
@@ -39,6 +46,9 @@ class Main extends Component {
 
     // cache shortlist pages
     this.getShortlistPages();
+
+    // cache shortlist
+    this.getShortlistItems();
   }
 
   render() {
@@ -61,16 +71,18 @@ class Main extends Component {
                 Pass in necessary state, functions and cached data as props to each component */}
             <TabPanel>
               <AddOpportunity changeTab={index => this.setTabIndex(index)} user={this.props.user} accessToken={this.props.accessToken}
-                tags={this.state.tags} recacheOppPages={this.recacheOppPages} recacheShortlistPages={this.recacheShortlistPages} />
+                tags={this.state.tags} recacheOppPages={this.recacheOppPages} recacheShortlistPages={this.recacheShortlistPages} recacheShortlist={this.recacheShortlist}/>
             </TabPanel>
             <TabPanel>
               <FundingCalls changeTab={index => this.setTabIndex(index)} user={this.props.user} accessToken={this.props.accessToken}
-                tags={this.state.tags} pages={this.state.oppPages} tagPresets={this.state.tagPresets} addTagPreset={this.addTagPreset} />
+                tags={this.state.tags} pages={this.state.oppPages} tagPresets={this.state.tagPresets} addTagPreset={this.addTagPreset}
+                recacheShortlistPages={this.recacheShortlistPages} recacheShortlist={this.recacheShortlist} />
             </TabPanel>
             {(this.props.user.role === "researcher") &&
               <TabPanel>
                 <Shortlist changeTab={index => this.setTabIndex(index)} user={this.props.user} accessToken={this.props.accessToken}
-                  pages={this.state.shortlistPages} />
+                  pages={this.state.shortlistPages} shortlist={this.state.shortlist} getShortlistOpportunity={href => this.getShortlistOpportunity(href)}
+                  recacheShortlistPages={this.recacheShortlistPages} recacheShortlist={this.recacheShortlist} />
               </TabPanel>
             }
 
@@ -114,6 +126,26 @@ class Main extends Component {
     );
   }
 
+  // get shortlisted items from API
+  async getShortlistItems() {
+    this.itemService.retrieveShortlist(this.props.user._links.self.href).then(shortlist => {
+      this.setState({ shortlist: shortlist })
+    }
+    );
+  }
+
+  // get opportunity that pertains to shortlist
+  // if opportunity has been cached, get it, otherwise make API call
+  async getShortlistOpportunity(href) {
+    if (href in this.state.shortlistOpportunities) {
+      return this.state.shortlistOpportunities[href];
+    } else {
+      let item = await this.itemService.getItem(href);
+      this.state.shortlistOpportunities[href] = item;
+      return item;
+    }
+  }
+
   // get the user's saved searches
   getTagPresets() {
     this.itemService.retrieveTagPresets(this.props.user._links.tagPresets.href).then(presets => {
@@ -130,6 +162,10 @@ class Main extends Component {
 
   recacheShortlistPages() {
     this.getShortlistPages();
+  }
+
+  recacheShortlist() {
+    this.getShortlistItems();
   }
 
   // this is used to add a saved search if the user creates a new one,

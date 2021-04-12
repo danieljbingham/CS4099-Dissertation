@@ -233,9 +233,12 @@ class FundingCalls extends Component {
             "user": this.props.user._links.self.href,
             "opportunity": this.state.selectedItem._links.self.href,
             "urls": "[]",
+            "checklist": "[]",
             "status": "shortlisted"
         }
-        this.itemService.createShortlistItem(shortlistRequest);
+        await this.itemService.createShortlistItem(shortlistRequest);
+        this.props.recacheShortlistPages();
+        this.props.recacheShortlist();
         this.props.changeTab(2);
 
     }

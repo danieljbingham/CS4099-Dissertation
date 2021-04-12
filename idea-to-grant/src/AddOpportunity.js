@@ -171,9 +171,10 @@ class AddOpportunity extends Component {
                     "user": this.props.user._links.self.href,
                     "opportunity": response._links.self.href,
                     "urls": "[]",
+                    "checklist": "[]",
                     "status": "shortlisted"
                 }
-                this.itemService.createShortlistItem(shortlistRequest)
+                await this.itemService.createShortlistItem(shortlistRequest)
             }
 
             // reset form after submission
@@ -192,6 +193,7 @@ class AddOpportunity extends Component {
             // if a bdm submits, take them to the funding calls tab
             if (this.props.user.role === "researcher") {
                 this.props.recacheShortlistPages();
+                this.props.recacheShortlist();
                 this.submitTab(2);
             } else {
                 this.props.recacheOppPages();

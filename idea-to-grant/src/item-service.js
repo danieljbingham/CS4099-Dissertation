@@ -289,6 +289,20 @@ class ItemService {
     }
   }
 
+  // generic method used for removing from shortlist
+  async removeShortlist(link) {
+    let response = await fetch(link, {
+      method: 'DELETE',
+      headers: new Headers({
+        'Authorization': 'Bearer ' + this.accessToken
+      })
+    });
+    if (!response.ok) {
+      this.handleResponseError(response);
+    }
+  }
+
+
   handleResponseError(response) {
     throw new Error("HTTP error, status = " + response.status);
   }

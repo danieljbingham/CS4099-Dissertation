@@ -37,6 +37,33 @@
     margin: 10px 0;
 }
 
+.shortlist .checklistEditing {
+    display: flex;
+    flex-direction: row;
+    padding: 0;
+    border: 0;
+    margin: 2px 0;
+}
+
+.shortlist .checklistEditing input[type=checkbox] {
+    -webkit-appearance: none;
+    width: 55px;
+    height: 43px;
+    border: 1px solid #ddd;
+    background-color: #eee;
+    margin-left: 0;
+    align-self: center;
+    margin-right: 8px;
+}
+
+.shortlist .checklistEditing input[type=checkbox]:checked {
+    background-color: #24d000;
+}
+
+.shortlist #checklistLabel p {
+    padding: 10px 0 0 0;
+}
+
 .shortlist .linksEditing {
     display: flex;
     flex-direction: row;
@@ -72,7 +99,7 @@
     width: 70%;
 }
 
-.shortlist #add {
+.shortlist .add {
     margin-left: 0;
     margin-bottom: 10px;
     display: block;
@@ -90,21 +117,34 @@
     display: flex;
 }
 
-.shortlist #remove {
+.shortlist .remove {
     border: 1px red solid;
     border-radius: 50%;
     width: 1.65em;
     height: 20px;
     cursor: pointer;
-    margin: 21px 0 0 4px;
+    margin: 21px 0 0 4px !important;
     vertical-align: top;
-    padding: 0 0 1px 0;
+    padding: 0 0 1px 0 !important;
     background-color: white;
     color: red;
     flex: 0 0 20px;
 }
 
-.shortlist #remove:hover {
+.shortlist .remove:hover {
+    border: 1px transparent solid;
+    color: white;
+    background-color: red;
+}
+
+.shortlist .removeShortlist {
+    border: 1px red solid;
+    background-color: white;
+    color: red;
+    margin-right: 12px !important;
+}
+
+.shortlist .removeShortlist:hover {
     border: 1px transparent solid;
     color: white;
     background-color: red;
