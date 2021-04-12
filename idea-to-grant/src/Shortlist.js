@@ -62,25 +62,17 @@ class Shortlist extends Component {
     }
 
     render() {
-        console.log("Filtered items ");
-        console.log(this.state.filteredItems)
-        console.log("Props shortlist ")
-        console.log(this.props.shortlist)
-        console.log("State Shortlist ")
-        console.log(this.state.shortlist)
-
         // map opportunities to list of Opportunity components
         const items = this.state.filteredItems.slice(this.state.pageNo * 5, this.state.pageNo * 5 + 5);
         if (!items) return null;
         const listItems = items.reduce((listItems, item) => {
+            // this will check to ensure the opportunity is not undefined
+            // which is possible when waiting for API call to return
             if (item) {
                 listItems.push(<Opportunity opportunity={item} onClick={this.urlClick} />)
             }
             return listItems;
         }, []);
-
-        console.log("Opps")
-        console.log(listItems)
 
         if (this.state.showDetails == false) {
             // default view for this tab, list all shortlisted opportunities
