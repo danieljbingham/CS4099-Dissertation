@@ -116,7 +116,7 @@ class AddOpportunity extends Component {
                                 placeholder: "Type some tags..."
                             }}
                             {...this.state.tagifyProps}   // dynamic props
-                            onChange={e => (e.persist(), this.setTags(e.target.value))}
+                            onChange={e => (this.setTags(e.detail.value))}
                         />
                     </label>
 
