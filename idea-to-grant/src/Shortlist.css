@@ -28,6 +28,16 @@
     appearance: none;
 }
 
+.shortlist input[type=text]:hover {
+	border-color: #ccc;
+}
+.shortlist input[type=text]:focus {
+	border-color: #3595f6;
+	box-shadow: 0 0 0 3px -moz-mac-focusring;
+	color: #222;
+	outline: none;
+}
+
 .shortlist .links {
     display: flex;
     flex-direction: row;

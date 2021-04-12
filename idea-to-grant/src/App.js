@@ -12,6 +12,7 @@ class App extends Component {
     this.onClick = this.onClick.bind(this);
     this.getUserInfo = this.getUserInfo.bind(this);
     this.notifyUser = this.notifyUser.bind(this);
+    this.forceLogin = this.forceLogin.bind(this);
     this.logError = this.logError.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.state = {
@@ -20,6 +21,13 @@ class App extends Component {
       role: "researcher",
       accessToken: ""
     }
+  }
+
+  componentDidMount() {
+    // user will be forced to login again after 50 minutes of having the extension constantly open
+    // this is good for security, but also ensures the access token doesn't expire
+    setTimeout(this.forceLogin, 3000000);
+    
   }
 
   render() {
@@ -134,6 +142,10 @@ class App extends Component {
 
   logError(error) {
     console.error(error);
+  }
+  
+  forceLogin() {
+    this.setState({ status: "login" });
   }
 
 }

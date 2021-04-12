@@ -328,7 +328,7 @@ class Shortlist extends Component {
 
         let response = await this.itemService.editShortlistItem(requestBody, shortlistItem._links.self.href);
 
-        this.setShortlistItem(this.state.selectedItem, response);
+        this.props.recacheShortlist();
         this.setState({
             editing: false,
         });
